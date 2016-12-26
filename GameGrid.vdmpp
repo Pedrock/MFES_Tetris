@@ -1,0 +1,33 @@
+class GameGrid
+
+types
+public CellType = <Blank> | <Cyan> | <Yellow> | <Purple> | <Green> | <Red> | <Blue> | <Orange>;
+public Grid = seq of seq of CellType;
+
+
+values
+HEIGHT : nat1 = 20;
+WIDTH : nat1 = 10;
+
+
+instance variables
+private grid : Grid := buildEmptyGrid(WIDTH, HEIGHT);
+
+
+operations
+getCell : nat1*nat1 ==> CellType
+getCell(x, y) == return grid(y)(x)
+pre x <= WIDTH and y <= HEIGHT
+post RESULT = grid(y)(x);
+
+functions
+private buildEmptyRow : nat -> seq of CellType
+	buildEmptyRow(length) == 
+		[<Blank> | v in set {1,...,length} & v > 0]; -- v > 0 used to avoid warning
+
+private buildEmptyGrid : nat1*nat1 -> Grid
+	buildEmptyGrid(width, height) == 
+		[buildEmptyRow(width) | v in set {1,...,height} & v > 0 ]; -- v > 0 used to avoid warning
+
+
+end GameGrid

@@ -1,0 +1,191 @@
+class Tetramino
+types
+TetraminoMatrix = seq of seq of GameGrid`CellType;
+RotationsList = seq of TetraminoMatrix;
+values
+tetraminoes : seq of RotationsList = 
+[
+	[ -- I tetramino
+		[
+			[<Blank>,	<Blank>, <Blank>,	<Blank>],
+			[<Cyan>,  <Cyan>,  <Cyan>,  <Cyan>],	
+			[<Blank>,	<Blank>, <Blank>,	<Blank>],
+			[<Blank>,	<Blank>, <Blank>,	<Blank>]
+		],
+		[
+			[<Blank>,	<Blank>, <Cyan>, <Blank>],
+			[<Blank>,	<Blank>, <Cyan>, <Blank>],
+			[<Blank>,	<Blank>, <Cyan>, <Blank>],
+			[<Blank>,	<Blank>, <Cyan>, <Blank>]
+		],
+		[
+			[<Blank>,	<Blank>, <Blank>,	<Blank>],
+			[<Blank>,	<Blank>, <Blank>,	<Blank>],
+			[<Cyan>,	<Cyan>,	 <Cyan>,	<Cyan> ],	
+			[<Blank>,	<Blank>, <Blank>,	<Blank>]
+		],
+		[
+			[<Blank>,	<Cyan>,	<Blank>,	<Blank>],
+			[<Blank>,	<Cyan>,	<Blank>,	<Blank>],
+			[<Blank>,	<Cyan>,	<Blank>,	<Blank>],
+			[<Blank>,	<Cyan>,	<Blank>,	<Blank>]
+		]
+	],
+	
+	[ -- J tetramino
+		[
+			[<Blue>,	 <Blank>, <Blank>],
+			[<Blue>,	 <Blue>,  <Blue>],
+			[<Blank>,  <Blank>, <Blank>]
+		],
+		[
+			[<Blank>,  <Blue>, <Blue>],
+			[<Blank>,  <Blue>, <Blank>],
+			[<Blank>,  <Blue>, <Blank>]
+		],
+		[
+			[<Blank>, <Blank>, <Blank>],
+			[<Blue>,  <Blue>,  <Blue>],
+			[<Blank>, <Blank>, <Blue>]
+		],
+		[
+			[<Blank>, <Blue>, <Blank>],
+			[<Blank>, <Blue>, <Blank>],
+			[<Blue>,  <Blue>, <Blank>]
+		]
+	],
+	
+	[ -- L tetramino
+		[
+			[<Blank>,	 <Blank>,  <Orange>],
+			[<Orange>, <Orange>, <Orange>],
+			[<Blank>,	 <Blank>,	 <Blank>]
+		],
+		[
+			[<Blank>,	<Orange>,	<Blank>],
+			[<Blank>,	<Orange>,	<Blank>],
+			[<Blank>,	<Orange>,	<Orange>]
+		],
+		[
+			[<Blank>,	 <Blank>,  <Blank>],
+			[<Orange>, <Orange>, <Orange>],
+			[<Orange>, <Blank>,  <Blank>]
+		],
+		[
+			[<Orange>, <Orange>, <Blank>],
+			[<Blank>,	 <Orange>, <Blank>],
+			[<Blank>,	 <Orange>, <Blank>]
+		]
+	],
+	
+	[ -- Square tetramino
+		[
+			[<Yellow>, <Yellow>],
+			[<Yellow>, <Yellow>]
+		]
+	],
+	
+	[ -- S tetramino
+		[
+			[<Blank>, <Green>, <Green>],
+			[<Green>, <Green>, <Blank>],
+			[<Blank>, <Blank>, <Blank>]
+		],
+		[
+			[<Blank>, <Green>, <Blank>],
+			[<Blank>, <Green>, <Green>],
+			[<Blank>, <Blank>, <Green>]
+		],
+		[
+			[<Blank>, <Blank>, <Blank>],
+			[<Blank>, <Green>, <Green>],
+			[<Green>, <Green>, <Blank>]
+		],
+		[
+			[<Green>, <Blank>, <Blank>],
+			[<Green>, <Green>, <Blank>],
+			[<Blank>, <Green>, <Blank>]
+		]
+	],
+	
+	[ -- T tetramino
+		[
+			[<Blank>, <Purple>, <Blank>],
+			[<Purple>, <Purple>, <Purple>],
+			[<Blank>, <Blank>, <Blank>]
+		],
+		[
+			[<Blank>, <Purple>, <Blank>],
+			[<Blank>, <Purple>, <Purple>],
+			[<Blank>, <Purple>, <Blank>]
+		],
+		[
+			[<Blank>, <Blank>, <Blank>],
+			[<Purple>, <Purple>, <Purple>],
+			[<Blank>, <Purple>, <Blank>]
+		],
+		[
+			[<Blank>, <Purple>, <Blank>],
+			[<Purple>, <Purple>, <Blank>],
+			[<Blank>, <Purple>, <Blank>]
+		]
+	],
+	
+	[ -- Z tetramino
+		[
+			[<Red>, <Red>, <Blank>],
+			[<Blank>, <Red>, <Red>],
+			[<Blank>, <Blank>, <Blank>]
+		],
+		[
+			[<Blank>, <Blank>, <Red>],
+			[<Blank>, <Red>, <Red>],
+			[<Blank>, <Red>, <Blank>]
+		],
+		[
+			[<Blank>, <Blank>, <Blank>],
+			[<Red>, <Red>, <Blank>],
+			[<Blank>, <Red>, <Red>]
+		],
+		[
+			[<Blank>, <Red>, <Blank>],
+			[<Red>, <Red>, <Blank>],
+			[<Red>, <Blank>, <Blank>]
+		]
+	]
+];
+
+
+instance variables
+rotation : nat1 := 1;
+rotationsList : RotationsList;
+inv rotation <= len rotationsList;
+
+
+operations
+public Tetramino : nat1 ==> Tetramino
+Tetramino(number) == (
+rotationsList := tetraminoes(number);
+return self
+)
+pre number <= len tetraminoes
+post RESULT.rotationsList = tetraminoes(number) and RESULT.rotation = 1;
+
+public rotateRight : () ==> ()
+rotateRight() == rotation := (rotation + 1) mod len rotationsList
+post (rotation = rotation~ + 1) or (rotation~ = len tetraminoes and rotation = 0);
+
+public rotateLeft : () ==> ()
+rotateLeft() == (
+	if rotation = 1 then rotation := len rotationsList
+	else rotation := rotation - 1
+)
+post (rotation = rotation~ - 1) or (rotation~ = 1 and rotation = len rotationsList);
+
+getCurrentMatrix : () ==> TetraminoMatrix
+getCurrentMatrix() == return rotationsList(rotation)
+post RESULT = rotationsList(rotation);
+
+functions
+
+end Tetramino

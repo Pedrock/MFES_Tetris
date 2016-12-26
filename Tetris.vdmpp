@@ -1,0 +1,24 @@
+class Tetris
+
+types
+
+
+values
+
+
+instance variables
+gameGrid : GameGrid;
+
+
+operations
+begin : () ==> ()
+begin() == (
+	gameGrid := new GameGrid();
+	
+);
+
+	
+functions
+
+
+end Tetris
