@@ -1,6 +1,7 @@
 class Tetramino
 types
-public TetraminoMatrix = seq of seq of GameGrid`CellType;
+public Line = seq of GameGrid`CellType;
+public TetraminoMatrix = seq of Line;
 private RotationsList = seq of TetraminoMatrix;
 values
 private tetraminoes : seq of RotationsList = 
