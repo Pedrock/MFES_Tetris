@@ -1,9 +1,9 @@
 class Tetramino
 types
-TetraminoMatrix = seq of seq of GameGrid`CellType;
-RotationsList = seq of TetraminoMatrix;
+public TetraminoMatrix = seq of seq of GameGrid`CellType;
+private RotationsList = seq of TetraminoMatrix;
 values
-tetraminoes : seq of RotationsList = 
+private tetraminoes : seq of RotationsList = 
 [
 	[ -- I tetramino
 		[
@@ -157,12 +157,13 @@ tetraminoes : seq of RotationsList =
 
 
 instance variables
-rotation : nat1 := 1;
-rotationsList : RotationsList;
+private rotation : nat1 := 1;
+private rotationsList : RotationsList;
 inv rotation <= len rotationsList;
 
 
 operations
+
 public Tetramino : nat1 ==> Tetramino
 Tetramino(number) == (
 rotationsList := tetraminoes(number);
@@ -171,9 +172,30 @@ return self
 pre number <= len tetraminoes
 post RESULT.rotationsList = tetraminoes(number) and RESULT.rotation = 1;
 
+
+public getRightRotation : () ==> TetraminoMatrix
+getRightRotation() == (
+	let newRotation = ((rotation + 1) mod len rotationsList) in (
+		return rotationsList(newRotation)
+	)
+)
+post (rotation < len rotationsList and RESULT = rotationsList(rotation+1))
+		 or (rotation = len rotationsList and RESULT = rotationsList(1));
+
+
 public rotateRight : () ==> ()
 rotateRight() == rotation := (rotation + 1) mod len rotationsList
 post (rotation = rotation~ + 1) or (rotation~ = len tetraminoes and rotation = 0);
+
+
+public getLeftRotation : () ==> TetraminoMatrix
+getLeftRotation() == (
+	if rotation = 1 then return rotationsList(len rotationsList)
+	else return rotationsList(rotation - 1)
+)
+post (rotation > 1 and RESULT = rotationsList(rotation-1))
+		 or (rotation = 1 and RESULT = rotationsList(len rotationsList));
+
 
 public rotateLeft : () ==> ()
 rotateLeft() == (
@@ -182,10 +204,15 @@ rotateLeft() == (
 )
 post (rotation = rotation~ - 1) or (rotation~ = 1 and rotation = len rotationsList);
 
-getCurrentMatrix : () ==> TetraminoMatrix
+
+public getCurrentMatrix : () ==> TetraminoMatrix
 getCurrentMatrix() == return rotationsList(rotation)
 post RESULT = rotationsList(rotation);
 
+
 functions
+
+public getNumber : () -> nat
+getNumber() == len tetraminoes;
 
 end Tetramino

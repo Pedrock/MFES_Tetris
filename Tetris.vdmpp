@@ -7,16 +7,19 @@ values
 
 
 instance variables
-gameGrid : GameGrid;
-
+gameGrid : GameGrid := new GameGrid();
+tetramino : Tetramino;
 
 operations
 begin : () ==> ()
 begin() == (
 	gameGrid := new GameGrid();
-	
+	tetramino := getRandomTetramino();
 );
 
+
+public getRandomTetramino : () ==> Tetramino
+getRandomTetramino() == return new Tetramino(MATH`rand(Tetramino`getNumber()-1)+1);
 	
 functions
 
