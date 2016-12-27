@@ -1,4 +1,8 @@
 class Tetris
+/*
+	A classe Tetris representa o o modelo principal do jogo, onde se encontram definidas as operações
+	 permitidas ao jogador.
+*/
 
 types
 
@@ -7,17 +11,23 @@ values
 
 
 instance variables
+
+--Grelha do jogo
 gameGrid : GameGrid := new GameGrid();
+
+--Tetraminó em jogo
 tetramino : Tetramino;
 
 operations
+
+--Início do jogo
 begin : () ==> ()
 begin() == (
 	gameGrid := new GameGrid();
 	tetramino := getRandomTetramino();
 );
 
-
+--Escolha aleatória do tetraminó em jogo
 public getRandomTetramino : () ==> Tetramino
 getRandomTetramino() == return new Tetramino(MATH`rand(Tetramino`getNumber()-1)+1);
 	
