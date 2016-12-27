@@ -9,6 +9,12 @@ types
 
 values
 
+-- Coluna mais à esquerda onde começa a peça
+STARTCOL : nat1 = 4;
+
+-- Linha mais abaixo onde começa a peça
+STARTROW : nat1 = 16;
+
 
 instance variables
 
@@ -17,6 +23,12 @@ gameGrid : GameGrid := new GameGrid();
 
 --Tetraminó em jogo
 tetramino : Tetramino;
+
+-- Coordenadas das células da peça
+private coordenate : seq of nat1 := [STARTCOL, STARTROW];
+
+--Rotação atual do tetraminó
+private currentRotation : nat1 := 1;
 
 operations
 
@@ -27,9 +39,39 @@ begin() == (
 	tetramino := getRandomTetramino();
 );
 
+--Verifica se é possivel mover a a peça para baixo
+canMoveDown : () ==> bool
+	canMoveDown() == (
+		for all cell1 in set dom tetramino.currentMatrix() do
+			for all cell2 in set {1, ..., tetramino.currentMatrix()(cell1)} do (
+				if tetramino.currentMatrix(cell2)(cell1) <> <Blank> and
+					gameGrid.getCell(cell2 - 1, cell1) = <Blank> then return false;
+			);
+		return true;
+	);
+	
+	--Adiciona o tetraminó à grelha do jogo
+	addTetramino : () ==> ()
+		addTetramino() == (
+			
+		);
+
+-- Atualiza o jogo
+update : () ==> ()
+	update() == (
+		if canMoveDown() then coordenate(2) := 1 - coordenate(2)
+		else addTetramino()
+	);
+
 --Escolha aleatória do tetraminó em jogo
 public getRandomTetramino : () ==> Tetramino
 getRandomTetramino() == return new Tetramino(MATH`rand(Tetramino`getNumber()-1)+1);
+
+--Atualiza a rotação atual do tetraminó
+public setCurrentRotation : nat1 ==> ()
+	setCurrentRotation(rotation) ==
+		(tetramino.setRotation(rotation))
+		pre (rotation >= 1 and rotation <= 4);
 	
 functions
 

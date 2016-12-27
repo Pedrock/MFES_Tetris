@@ -229,6 +229,17 @@ public getCurrentMatrix : () ==> TetraminoMatrix
 getCurrentMatrix() == return rotationsList(rotation)
 post RESULT = rotationsList(rotation);
 
+--Devolve a rotação atual
+public getRotation : () ==> nat1
+	getRotation() == (
+		return rotation
+	);
+	
+	--Atualiza a rotação atual
+public setRotation : nat1 ==> ()
+	setRotation(rot) == (
+		rotation := rot
+	);
 
 functions
 
