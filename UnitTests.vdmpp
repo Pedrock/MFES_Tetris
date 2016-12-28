@@ -15,7 +15,7 @@ public testNoCollision2: () ==> ()
 testNoCollision2() == (
 	tetris.begin();
 	tetris.tetramino := new Tetramino(1); -- Tetraminó I
-	tetris.tetramino.rotateRight();
+	tetris.tetramino.rotation := 2;
 	assertFalse(tetris.tetraminoHasCollisionInCoords(8,15));
 );
 
@@ -24,8 +24,65 @@ testWallCollision() == (
 	tetris.begin();
 	tetris.tetramino := new Tetramino(1); -- Tetraminó I
 	assertTrue(tetris.tetraminoHasCollisionInCoords(8,15));
-	tetris.tetramino.rotateRight();
+	tetris.tetramino.rotation := 2;
 	assertFalse(tetris.tetraminoHasCollisionInCoords(8,15));
 );
+
+public testRightWallKick: () ==> ()
+testRightWallKick() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino(1); -- Tetraminó I
+	assertTrue(tetris.tetramino.x = 4);
+	tetris.moveRight(); tetris.moveRight(); tetris.moveRight();
+	assertTrue(tetris.tetramino.x = 7);
+	tetris.moveRight();
+	assertTrue(tetris.tetramino.x = 7);
+	tetris.rotateRight();
+	assertTrue(tetris.tetramino.rotation = 2);
+	assertTrue(tetris.tetramino.x = 7);
+	tetris.moveRight(); tetris.moveRight();
+	assertTrue(tetris.tetramino.x = 8);
+	tetris.rotateRight();
+	assertTrue(tetris.tetramino.rotation = 3);
+	assertTrue(tetris.tetramino.x = 7);
+);
+
+public testLeftWallKick: () ==> ()
+testLeftWallKick() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino(1); -- Tetraminó I
+	assertTrue(tetris.tetramino.x = 4);
+	tetris.moveLeft(); tetris.moveLeft(); tetris.moveLeft();
+	assertTrue(tetris.tetramino.x = 1);
+	tetris.moveLeft();
+	assertTrue(tetris.tetramino.x = 1);
+	tetris.rotateRight();
+	assertTrue(tetris.tetramino.rotation = 2);
+	assertTrue(tetris.tetramino.x = 1);
+	tetris.moveLeft(); tetris.moveLeft(); tetris.moveLeft();
+	assertTrue(tetris.tetramino.x = -1);
+	tetris.rotateRight();
+	assertTrue(tetris.tetramino.rotation = 2);
+	tetris.moveRight();
+	assertTrue(tetris.tetramino.x = 0);
+	tetris.rotateRight();
+	assertTrue(tetris.tetramino.rotation = 3);
+	assertTrue(tetris.tetramino.x = 1);
+);
+
+public testAddTetramino: () ==> ()
+testAddTetramino() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino(1);
+	assertTrue(tetris.tetramino.y = 22);
+	tetris.tick();
+	assertTrue(tetris.tetramino.y = 21);
+	for i = 1 to 19 do tetris.tick();
+	assertTrue(tetris.tetramino.y = 2);
+	tetris.tick(); -- Tetraminó é adicionado à grelha
+	assertTrue(tetris.gameGrid.grid(1)(5) = <Cyan>);
+	assertTrue(tetris.tetramino.y = 22); -- Novo tetraminó
+)
+
 
 end UnitTests

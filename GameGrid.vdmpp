@@ -36,6 +36,20 @@ getCell(x, y) == return grid(y)(x)
 pre x <= WIDTH and y <= HEIGHT
 post RESULT = grid(y)(x);
 
+public addTetramino : Tetramino ==> ()
+addTetramino(tetramino) == (
+	for all tetraminoY in set inds tetramino.getCurrentMatrix() do (
+		let line = tetramino.getCurrentMatrix()(tetraminoY) in (
+			for all tetraminoX in set inds line do (
+				let cellX = tetramino.x - 1 + tetraminoX, cellY = tetramino.y + 1 - tetraminoY in (
+				if (line(tetraminoX) <> <Blank>) then
+						grid(cellY)(cellX) := line(tetraminoX)
+				)
+			)
+		)
+	)
+);
+
 functions
 
 -- Criação de uma linha da grelha vazia

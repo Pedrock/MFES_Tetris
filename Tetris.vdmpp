@@ -18,7 +18,7 @@ public gameGrid : GameGrid := new GameGrid();
 -- Tetraminó em jogo
 public tetramino : Tetramino := getRandomTetramino();
 
--- inv not hasCollision(tetramino.rotationsList, gameGrid.grid, tetramino.rotation, tetramino.x, tetramino.y);
+inv not hasCollision(tetramino.rotationsList(tetramino.rotation), gameGrid.grid, tetramino.x, tetramino.y);
 
 operations
 
@@ -27,6 +27,50 @@ public begin : () ==> ()
 begin() == (
 	gameGrid := new GameGrid();
 	tetramino := getRandomTetramino();
+);
+
+public tick : () ==> ()
+tick() == (
+	if not tetraminoHasCollisionInCoords(tetramino.x, tetramino.y - 1) then
+		tetramino.y := tetramino.y - 1
+	else (
+		gameGrid.addTetramino(tetramino);
+		tetramino := getRandomTetramino()
+	)
+);
+
+public moveRight : () ==> ()
+moveRight() == (
+	if not tetraminoHasCollisionInCoords(tetramino.x + 1, tetramino.y) then
+		tetramino.x := tetramino.x + 1;
+);
+
+public moveLeft : () ==> ()
+moveLeft() == (
+	if not tetraminoHasCollisionInCoords(tetramino.x - 1, tetramino.y) then
+		tetramino.x := tetramino.x - 1;
+);
+
+public rotateRight : () ==> ()
+rotateRight() == tryRotation(tetramino.getRightRotation());
+
+public rotateLeft : () ==> ()
+rotateLeft() == tryRotation(tetramino.getLeftRotation());
+
+private tryRotation : Tetramino`RotationResult ==> ()
+tryRotation(result) ==  (
+	if not hasCollision(result.matrix, gameGrid.grid, tetramino.x, tetramino.y) then
+			tetramino.rotation := result.rotation
+		else if not hasCollision(result.matrix, gameGrid.grid, tetramino.x + 1, tetramino.y) then
+		atomic ( -- Right wall kick (http://tetris.wikia.com/wiki/Wall_kick)
+			tetramino.rotation := result.rotation;
+			tetramino.x := tetramino.x + 1
+		)
+		else if not hasCollision(result.matrix, gameGrid.grid, tetramino.x - 1, tetramino.y) then
+		atomic ( -- Left wall kick
+			tetramino.rotation := result.rotation;
+			tetramino.x := tetramino.x - 1
+		)
 );
 
 --Escolha aleatória do tetraminó em jogo
@@ -53,14 +97,13 @@ tetraminoHasCollisionInCoords(x, y) == (
 	return false
 )
 post 
-RESULT = hasCollision(tetramino.rotationsList, gameGrid.grid, tetramino.rotation, x, y);
+RESULT = hasCollision(tetramino.rotationsList(tetramino.rotation), gameGrid.grid, x, y);
 
 
 functions
 
-public hasCollision : Tetramino`RotationsList * GameGrid`Grid * nat1 * int * int -> bool
-hasCollision(rotationsList, gameGrid, rotation, x, y) ==
-let tetraminoMatrix = rotationsList(rotation) in (
+public hasCollision : Tetramino`TetraminoMatrix * GameGrid`Grid * int * int -> bool
+hasCollision(tetraminoMatrix, gameGrid, x, y) == (
 	exists tetraminoY in set inds tetraminoMatrix &
 		exists tetraminoX in set inds tetraminoMatrix(tetraminoY)
 			& tetraminoMatrix(tetraminoY)(tetraminoX) <> <Blank> 
