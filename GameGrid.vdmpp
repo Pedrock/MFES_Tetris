@@ -6,47 +6,47 @@ class GameGrid
 
 types
 
---Possiveis tipos de células
+-- Possiveis tipos de células
 public CellType = <Blank> | <Cyan> | <Yellow> | <Purple> | <Green> | <Red> | <Blue> | <Orange>;
 
---Grelha do jogo, que é constituida por uma matriz de células
+-- Grelha do jogo, que é constituida por uma matriz de células
 public Grid = seq of seq of CellType;
 
 
 values
 
---Altura da grelha
-HEIGHT : nat1 = 20;
+-- Altura da grelha
+public HEIGHT : nat1 = 22;
 
---Largura da grelha
-WIDTH : nat1 = 10;
+-- Largura da grelha
+public WIDTH : nat1 = 10;
 
 
 instance variables
 
---Grelha inicial encontra-se vazia
+-- Grelha inicial encontra-se vazia
 private grid : Grid := buildEmptyGrid(WIDTH, HEIGHT);
 
 
 operations
 
---Retorna a célula que se encontra na posição x,y
-getCell : nat1*nat1 ==> CellType
+-- Retorna a célula que se encontra na posição x,y
+public getCell : nat1*nat1 ==> CellType
 getCell(x, y) == return grid(y)(x)
 pre x <= WIDTH and y <= HEIGHT
 post RESULT = grid(y)(x);
 
 functions
 
---Criação de uma linha da grelha vazia
+-- Criação de uma linha da grelha vazia
 private buildEmptyRow : nat -> seq of CellType
 	buildEmptyRow(length) == 
-		[<Blank> | v in set {1,...,length} & v > 0]; -- v > 0 used to avoid warning
+		[<Blank> | v in set {1,...,length} & v > 0]; -- v > 0 utilizado para remover warning
 
---Criação de uma grelha vazia
+-- Criação de uma grelha vazia
 private buildEmptyGrid : nat1*nat1 -> Grid
 	buildEmptyGrid(width, height) == 
-		[buildEmptyRow(width) | v in set {1,...,height} & v > 0 ]; -- v > 0 used to avoid warning
+		[buildEmptyRow(width) | v in set {1,...,height} & v > 0 ]; -- v > 0 utilizado para remover warning
 
 
 end GameGrid

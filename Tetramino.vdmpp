@@ -4,21 +4,22 @@ class Tetramino
 */
 
 types
---Linha de células representativa de um tetramino
+-- Linha de células representativa de um tetraminó
 public Line = seq of GameGrid`CellType;
 
---Matriz de tipos de células representativa de um tetramino
+
+-- Matriz de tipos de células representativa de um tetraminó
 public TetraminoMatrix = seq of Line;
 
---Sequência das possiveis rotações de um tetraminó
+-- Sequência das possiveis rotações de um tetraminó
 private RotationsList = seq of TetraminoMatrix;
 
 values
 
---Todas as diferentes representações (matrizes) de tetraminos no jogo, tendo em contas as suas rotações
+-- Todas as diferentes representações (matrizes) de tetraminos no jogo, tendo em contas as suas rotações
 private tetraminoes : seq of RotationsList = 
 [
-	[ -- I tetramino
+	[ -- Tetramino I
 		[
 			[<Blank>,	<Blank>, <Blank>,	<Blank>],
 			[<Cyan>,  <Cyan>,  <Cyan>,  <Cyan>],	
@@ -45,7 +46,7 @@ private tetraminoes : seq of RotationsList =
 		]
 	],
 	
-	[ -- J tetramino
+	[ -- Tetramino J
 		[
 			[<Blue>,	 <Blank>, <Blank>],
 			[<Blue>,	 <Blue>,  <Blue>],
@@ -68,7 +69,7 @@ private tetraminoes : seq of RotationsList =
 		]
 	],
 	
-	[ -- L tetramino
+	[ -- Tetramino L
 		[
 			[<Blank>,	 <Blank>,  <Orange>],
 			[<Orange>, <Orange>, <Orange>],
@@ -91,14 +92,14 @@ private tetraminoes : seq of RotationsList =
 		]
 	],
 	
-	[ -- Square tetramino
+	[ -- Tetramino quadrado
 		[
 			[<Yellow>, <Yellow>],
 			[<Yellow>, <Yellow>]
 		]
 	],
 	
-	[ -- S tetramino
+	[ -- Tetramino S
 		[
 			[<Blank>, <Green>, <Green>],
 			[<Green>, <Green>, <Blank>],
@@ -121,7 +122,7 @@ private tetraminoes : seq of RotationsList =
 		]
 	],
 	
-	[ -- T tetramino
+	[ -- Tetramino T
 		[
 			[<Blank>, <Purple>, <Blank>],
 			[<Purple>, <Purple>, <Purple>],
@@ -144,7 +145,7 @@ private tetraminoes : seq of RotationsList =
 		]
 	],
 	
-	[ -- Z tetramino
+	[ -- Tetramino Z
 		[
 			[<Red>, <Red>, <Blank>],
 			[<Blank>, <Red>, <Red>],
@@ -171,11 +172,15 @@ private tetraminoes : seq of RotationsList =
 
 instance variables
 
---Rotação do tetraminó
+-- Rotação do tetraminó
 private rotation : nat1 := 1;
 
---Lista de rotações do tetraminó
+-- Lista de rotações do tetraminó
 private rotationsList : RotationsList;
+
+-- Coordenadas iniciais do tetraminó
+public x : int := GameGrid`HEIGHT;
+public y : int := GameGrid`WIDTH / 2;
 
 --O índice da rotação não pode ser superior ao tamanho da lista de possiveis rotações
 inv rotation <= len rotationsList;
@@ -183,16 +188,17 @@ inv rotation <= len rotationsList;
 
 operations
 
---Tetraminó no estado inicial, com a rotação inicial (igual a 1)
+-- Tetraminó no estado inicial, com a rotação inicial (igual a 1)
 public Tetramino : nat1 ==> Tetramino
 Tetramino(number) == (
 rotationsList := tetraminoes(number);
+
 return self
 )
 pre number <= len tetraminoes
 post RESULT.rotationsList = tetraminoes(number) and RESULT.rotation = 1;
 
---Devolve a matriz representativa do tetraminó aquando da rotação à direita
+-- Devolve a matriz representativa do tetraminó aquando da rotação à direita
 public getRightRotation : () ==> TetraminoMatrix
 getRightRotation() == (
 	let newRotation = ((rotation + 1) mod len rotationsList) in (
@@ -202,12 +208,12 @@ getRightRotation() == (
 post (rotation < len rotationsList and RESULT = rotationsList(rotation+1))
 		 or (rotation = len rotationsList and RESULT = rotationsList(1));
 
---Rotação à direita
+-- Rotação à direita
 public rotateRight : () ==> ()
 rotateRight() == rotation := (rotation + 1) mod len rotationsList
 post (rotation = rotation~ + 1) or (rotation~ = len tetraminoes and rotation = 0);
 
---Devolve a matriz representativa do tetraminó aquando da rotação à esquerda
+-- Devolve a matriz representativa do tetraminó aquando da rotação à esquerda
 public getLeftRotation : () ==> TetraminoMatrix
 getLeftRotation() == (
 	if rotation = 1 then return rotationsList(len rotationsList)
@@ -216,7 +222,7 @@ getLeftRotation() == (
 post (rotation > 1 and RESULT = rotationsList(rotation-1))
 		 or (rotation = 1 and RESULT = rotationsList(len rotationsList));
 
---Rotação à esquerda
+-- Rotação à esquerda
 public rotateLeft : () ==> ()
 rotateLeft() == (
 	if rotation = 1 then rotation := len rotationsList
@@ -224,15 +230,14 @@ rotateLeft() == (
 )
 post (rotation = rotation~ - 1) or (rotation~ = 1 and rotation = len rotationsList);
 
---Retorna a matriz do tetraminó
+-- Retorna a matriz do tetraminó
 public getCurrentMatrix : () ==> TetraminoMatrix
 getCurrentMatrix() == return rotationsList(rotation)
 post RESULT = rotationsList(rotation);
 
-
 functions
 
---Devolve o número de tetraminós
+-- Devolve o número de tetraminós
 public getNumber : () -> nat
 getNumber() == len tetraminoes;
 

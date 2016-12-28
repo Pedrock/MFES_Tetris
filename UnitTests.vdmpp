@@ -1,0 +1,31 @@
+class UnitTests is subclass of TestCase
+
+instance variables
+private tetris : Tetris := new Tetris();
+
+
+operations
+public testNoCollision: () ==> ()
+testNoCollision() == (
+	tetris.begin();
+	assertFalse(tetris.tetraminoHasCollisionInCoords(5,5))
+);
+
+public testNoCollision2: () ==> ()
+testNoCollision2() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino(1); -- Tetraminó I
+	tetris.tetramino.rotateRight();
+	assertFalse(tetris.tetraminoHasCollisionInCoords(8,15));
+);
+
+public testWallCollision: () ==> ()
+testWallCollision() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino(1); -- Tetraminó I
+	assertTrue(tetris.tetraminoHasCollisionInCoords(8,15));
+	tetris.tetramino.rotateRight();
+	assertFalse(tetris.tetraminoHasCollisionInCoords(8,15));
+);
+
+end UnitTests
