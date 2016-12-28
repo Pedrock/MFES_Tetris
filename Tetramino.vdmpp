@@ -12,7 +12,7 @@ public Line = seq of GameGrid`CellType;
 public TetraminoMatrix = seq of Line;
 
 -- Sequência das possiveis rotações de um tetraminó
-private RotationsList = seq of TetraminoMatrix;
+public RotationsList = seq of TetraminoMatrix;
 
 values
 
@@ -173,14 +173,14 @@ private tetraminoes : seq of RotationsList =
 instance variables
 
 -- Rotação do tetraminó
-private rotation : nat1 := 1;
+public rotation : nat1 := 1;
 
 -- Lista de rotações do tetraminó
-private rotationsList : RotationsList;
+public rotationsList : RotationsList;
 
 -- Coordenadas iniciais do tetraminó
-public x : int := GameGrid`HEIGHT;
-public y : int := GameGrid`WIDTH / 2;
+public x : int := GameGrid`WIDTH / 2;
+public y : int := GameGrid`HEIGHT;
 
 --O índice da rotação não pode ser superior ao tamanho da lista de possiveis rotações
 inv rotation <= len rotationsList;

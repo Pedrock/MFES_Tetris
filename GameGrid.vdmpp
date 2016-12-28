@@ -25,7 +25,7 @@ public WIDTH : nat1 = 10;
 instance variables
 
 -- Grelha inicial encontra-se vazia
-private grid : Grid := buildEmptyGrid(WIDTH, HEIGHT);
+public grid : Grid := buildEmptyGrid(WIDTH, HEIGHT);
 
 
 operations
