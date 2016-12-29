@@ -204,7 +204,7 @@ post RESULT.rotationsList = tetraminoes(number) and RESULT.rotation = 1;
 -- Devolve o índice de rotação e a matriz representativa do tetraminó aquando da rotação à direita
 public getRightRotation : () ==> RotationResult
 getRightRotation() == (
-	let newRotation = ((rotation + 1) mod len rotationsList) in (
+	let newRotation = ((rotation) mod (len rotationsList) + 1) in (
 		return mk_RotationResult(newRotation, rotationsList(newRotation))
 	)
 )

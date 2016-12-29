@@ -77,12 +77,23 @@ testAddTetramino() == (
 	assertTrue(tetris.tetramino.y = 22);
 	tetris.tick();
 	assertTrue(tetris.tetramino.y = 21);
-	for i = 1 to 19 do tetris.tick();
+	for i = 1 to 19 do if (i > 0) then tetris.tick();
 	assertTrue(tetris.tetramino.y = 2);
 	tetris.tick(); -- Tetraminó é adicionado à grelha
 	assertTrue(tetris.gameGrid.grid(1)(5) = <Cyan>);
 	assertTrue(tetris.tetramino.y = 22); -- Novo tetraminó
-)
+);
 
+public testAdd2Tetraminos: () ==> ()
+testAdd2Tetraminos() == (
+	testAddTetramino();
+	tetris.tetramino := new Tetramino(1);
+	assertTrue(tetris.tetramino.y = 22);
+	for i = 1 to 19 do if (i > 0) then tetris.tick();
+	assertTrue(tetris.tetramino.y = 3);
+	tetris.tick();
+	assertTrue(tetris.gameGrid.grid(2)(5) = <Cyan>);
+	assertTrue(tetris.tetramino.y = 22); -- Novo tetraminó
+);
 
 end UnitTests
