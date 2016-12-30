@@ -74,6 +74,14 @@ tick() == (
 		addTetraminoToGrid();
 );
 
+-- Função para obter o delay entre ticks.
+public getTickDelay : () ==> int
+getTickDelay() == (
+	if (level <= 8) then return floor (-83.5*level + 800.67)
+	elseif (level <= 29) then return floor (-3.5325*level + 115.69)
+	else return 13;
+);
+
 -- Função chamada pela GUI para mover a peça atual para a direita
 public moveRight : () ==> ()
 moveRight() == (

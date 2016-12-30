@@ -41,6 +41,19 @@ public class Tetris {
     }
   }
 
+  public Number getTickDelay() {
+
+    if (level.longValue() <= 8L) {
+      return Math.round(Utils.floor(-83.5 * level.longValue() + 800.67));
+
+    } else if (level.longValue() <= 29L) {
+      return Math.round(Utils.floor(-3.5325 * level.longValue() + 115.69));
+
+    } else {
+      return 13L;
+    }
+  }
+
   public void moveRight() {
 
     if (!(Utils.equals(gameState, tetris.quotes.GameQuote.getInstance()))) {

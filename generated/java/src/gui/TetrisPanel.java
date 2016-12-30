@@ -36,6 +36,8 @@ public class TetrisPanel extends JPanel implements KeyListener {
 	
 	private static Tetris tetris;
 	
+	private boolean pressingDown = false;
+	
 	public TetrisPanel() {
 		tetris = new Tetris();
 		tetris.begin();
@@ -45,7 +47,9 @@ public class TetrisPanel extends JPanel implements KeyListener {
 			@Override public void run() {
 				while (true) {
 					try {
-						Thread.sleep(400);
+						int delay = tetris.getTickDelay().intValue();
+						if (pressingDown) delay /= 6;
+						Thread.sleep(delay);
 						tetris.tick();
 						repaint();
 					} catch ( InterruptedException e ) {}
@@ -176,9 +180,10 @@ public class TetrisPanel extends JPanel implements KeyListener {
 	public boolean processKeyPress(KeyEvent e) {
 		switch (e.getKeyCode()) {
 			case KeyEvent.VK_UP:
+			case KeyEvent.VK_X:
 				tetris.rotateRight();
 				return true;
-			case KeyEvent.VK_DOWN:
+			case KeyEvent.VK_Z:
 				tetris.rotateLeft();
 				return true;
 			case KeyEvent.VK_LEFT:
@@ -190,6 +195,9 @@ public class TetrisPanel extends JPanel implements KeyListener {
 			case KeyEvent.VK_SPACE:
 				tetris.hardDrop();
 				return true;
+			case KeyEvent.VK_DOWN:
+				pressingDown = true;
+				return false;
 			default:
 				return false;
 		}
@@ -214,5 +222,10 @@ public class TetrisPanel extends JPanel implements KeyListener {
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) { }
+	public void keyReleased(KeyEvent e) {
+		switch (e.getKeyCode()) {
+			case KeyEvent.VK_DOWN:
+				pressingDown = false;
+		}
+	}
 }
