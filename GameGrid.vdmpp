@@ -15,8 +15,15 @@ public Grid = seq of seq of CellType;
 
 values
 
+/*
+		A grelha do jogo tem largura de 10 células e altura de 22, das quais apenas as 20 de baixo são visíveis.
+		http://tetris.wikia.com/wiki/Tetris_Guideline#Indispensable_Rules
+*/
 -- Altura da grelha
 public HEIGHT : nat1 = 22;
+
+-- Altura da parte visível da grelha
+public VISIBLE_HEIGHT : nat1 = 20;
 
 -- Largura da grelha
 public WIDTH : nat1 = 10;
@@ -27,7 +34,6 @@ instance variables
 -- Grelha inicial encontra-se vazia
 public grid : Grid := buildEmptyGrid(WIDTH, HEIGHT);
 
-
 operations
 
 -- Retorna a célula que se encontra na posição x,y
@@ -36,6 +42,7 @@ getCell(x, y) == return grid(y)(x)
 pre x <= WIDTH and y <= HEIGHT
 post RESULT = grid(y)(x);
 
+-- Adiciona um tetramino à matriz das peças fixas
 public addTetramino : Tetramino ==> ()
 addTetramino(tetramino) == (
 	for all tetraminoY in set inds tetramino.getCurrentMatrix() do (
@@ -48,15 +55,36 @@ addTetramino(tetramino) == (
 			)
 		)
 	)
+)
+post let tetraminoMatrix = tetramino.rotationsList(tetramino.rotation) in (
+	forall y in set inds grid & (
+		let line = grid(y) in (
+			forall x in set inds line
+				& (
+					let tX = x - tetramino.x + 1, tY = tetramino.y - y + 1 in (
+						if (tY in set inds tetraminoMatrix and tX in set inds tetraminoMatrix(tY)) then (
+							(tetraminoMatrix(tY)(tX) = <Blank> and grid~(y)(x) = grid(y)(x))
+							or 
+							(tetraminoMatrix(tY)(tX) <> <Blank> and grid(y)(x) = tetraminoMatrix(tY)(tX))
+						)
+						else
+								grid~(y)(x) = grid(y)(x)
+				)
+			)
+		)
+	)
 );
 
+-- Remove linha da matriz, e adiciona nova no topo
 public removeLine : nat1 ==> ()
 removeLine(y) == (
 	for i = y to HEIGHT - 1 do (
 		grid(i) := grid(i + 1);
 	);
 	grid(HEIGHT) := buildEmptyRow(WIDTH);
-);
+)
+pre y in set inds grid
+post len grid = HEIGHT;
 
 functions
 

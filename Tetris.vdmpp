@@ -6,11 +6,25 @@ class Tetris
 
 types
 
+-- Vários estados do jogo
 public GameState = <NotStarted> | <Game> | <GameOver>;
 
 values
 
+-- Número de linhas a remover para passar para o nível seguinte
 public LINES_PER_LEVEL : nat1 = 20;
+
+/* 
+		Pontuação por número de linhas apagadas de uma vez.
+		Este valor deve ser multiplicado por (nível + 1).
+		Fonte: http://tetris.wikia.com/wiki/Scoring
+*/
+private mapNumLinesToScorePerLevel : map nat1 to nat = {
+	1 |-> 40, 
+	2 |-> 100, 
+	3 |-> 300, 
+	4 |-> 1200
+};
 
 instance variables
 
@@ -19,15 +33,21 @@ public gameGrid : GameGrid := new GameGrid();
 
 -- Tetraminó em jogo
 public tetramino : [Tetramino] := nil;
+public nextTetramino : [Tetramino] := nil;
 
+-- Pontuação atual
 public score : nat := 0;
 
+-- Nível atual
 public level : nat := 0;
 
+-- Número de linhas já apagadas
 public numberOfLines : nat := 0;
 
+-- Estado do jogo atual
 public gameState : GameState := <NotStarted>;
 
+-- Invariante para garantir que um tetraminó não sobrepõe a matriz de jogo
 inv tetramino = nil or not hasCollision(tetramino.rotationsList(tetramino.rotation), gameGrid.grid, tetramino.x, tetramino.y);
 
 operations
@@ -37,12 +57,14 @@ public begin : () ==> ()
 begin() == (
 	gameGrid := new GameGrid();
 	tetramino := getRandomTetramino();
+	nextTetramino := getRandomTetramino();
 	score := 0;
 	level := 0;
 	numberOfLines := 0;
 	gameState := <Game>;
 );
 
+-- Função a ser chamada a cada tick do jogo, de forma a atualizar o mesmo
 public tick : () ==> ()
 tick() == (
 	if (gameState <> <Game>) then return;
@@ -52,6 +74,7 @@ tick() == (
 		addTetraminoToGrid();
 );
 
+-- Função chamada pela GUI para mover a peça atual para a direita
 public moveRight : () ==> ()
 moveRight() == (
 	if (gameState <> <Game>) then return;
@@ -59,6 +82,7 @@ moveRight() == (
 		tetramino.x := tetramino.x + 1;
 );
 
+-- Função chamada pela GUI para mover a peça atual para a esquerda
 public moveLeft : () ==> ()
 moveLeft() == (
 	if (gameState <> <Game>) then return;
@@ -66,18 +90,21 @@ moveLeft() == (
 		tetramino.x := tetramino.x - 1;
 );
 
+-- Função chamada pela GUI para rodar a peça atual para a direita
 public rotateRight : () ==> ()
 rotateRight() == (
 	if (gameState <> <Game>) then return;
 	tryRotation(tetramino.getRightRotation())
 );
 
+-- Função chamada pela GUI para rodar a peça atual para a esquerda
 public rotateLeft : () ==> ()
 rotateLeft() == (
 	if (gameState <> <Game>) then return;
 	tryRotation(tetramino.getLeftRotation())
 );
 
+-- Função chamada pela GUI para fazer um hard drop
 public hardDrop : () ==> ()
 hardDrop() == (
 	if (gameState <> <Game>) then return;
@@ -87,11 +114,13 @@ hardDrop() == (
 	addTetraminoToGrid()
 );
 
+-- Função utilizada para verificar se uma peça pode ser movida uma casa para baixo
 private canMoveDown : () ==> bool
 canMoveDown() == (
 	return not tetraminoHasCollisionInCoords(tetramino.x, tetramino.y - 1)
 );
 
+-- Função para adicionar o tetramino atual à matriz de peças fixas
 private addTetraminoToGrid : () ==> ()
 addTetraminoToGrid() == (
 	gameGrid.addTetramino(tetramino);
@@ -102,10 +131,13 @@ addTetraminoToGrid() == (
 			tetramino := nil;
 		)
 	);
-	if gameState = <Game> then
-		tetramino := getRandomTetramino();
+	if gameState = <Game> then (
+		tetramino := nextTetramino;
+		nextTetramino := getRandomTetramino();
+	);
 );
 
+-- Função utilizada para remover linhas completas e atulizar pontuação
 private removeCompleteLines : () ==> ()
 removeCompleteLines() == (
 	dcl linesRemoved : nat := 0;
@@ -129,12 +161,15 @@ removeCompleteLines() == (
 	)
 );
 
+-- Vê se é possível fazer uma rotação. Se for possível, executa a mesma.
+-- Se não for possível tenta a mesma movendo a peça uma casa para a direita ou em último caso, para a esquerda.
+-- Processo descrito em: http://tetris.wikia.com/wiki/Wall_kick
 private tryRotation : Tetramino`RotationResult ==> ()
 tryRotation(result) ==  (
 	if not hasCollision(result.matrix, gameGrid.grid, tetramino.x, tetramino.y) then
 			tetramino.rotation := result.rotation
 		else if not hasCollision(result.matrix, gameGrid.grid, tetramino.x + 1, tetramino.y) then
-		atomic ( -- Right wall kick (http://tetris.wikia.com/wiki/Wall_kick)
+		atomic ( -- Right wall kick
 			tetramino.rotation := result.rotation;
 			tetramino.x := tetramino.x + 1
 		)
@@ -174,6 +209,7 @@ RESULT = hasCollision(tetramino.rotationsList(tetramino.rotation), gameGrid.grid
 
 functions
 
+-- Teste de colisões de matriz de tetraminó com cubos existentes na matriz de jogo, para determinada posição (x, y) do tetraminó
 private hasCollision : Tetramino`TetraminoMatrix * GameGrid`Grid * int * int -> bool
 hasCollision(tetraminoMatrix, gameGrid, x, y) == (
 	exists tetraminoY in set inds tetraminoMatrix &
@@ -188,14 +224,11 @@ hasCollision(tetraminoMatrix, gameGrid, x, y) == (
 			)
 );
 
-private calcScore : nat*nat -> nat
+-- Cálculo da pontuação para um determinado número de linhas completas de uma vez, tendo em conta o nivel atual
+private calcScore : nat1*nat -> nat
 calcScore(lines, level) == (
-	if (lines = 0) then 0
-	else if (lines = 1) then 40*(level+1)
-	else if (lines = 2) then 100*(level+1)
-	else if (lines = 3) then 300*(level+1)
-	else 1200*(level+1)
+	mapNumLinesToScorePerLevel(lines)*(level+1)
 )
-pre lines <= 4;
+pre lines in set dom mapNumLinesToScorePerLevel;
 
 end Tetris

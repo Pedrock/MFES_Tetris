@@ -14,12 +14,14 @@ public TetraminoMatrix = seq of Line;
 -- Sequência das possiveis rotações de um tetraminó
 public RotationsList = seq of TetraminoMatrix;
 
+-- Resultado de uma rotação: número de rotação (índice) e a respetiva matriz
 public RotationResult:: rotation : nat1
 												matrix : TetraminoMatrix;
 
 values
 
 -- Todas as diferentes representações (matrizes) de tetraminos no jogo, tendo em contas as suas rotações
+-- Utilizado o Super Rotation System (SRS): http://tetris.wikia.com/wiki/SRS
 private tetraminoes : seq of RotationsList = 
 [
 	[ -- Tetramino I

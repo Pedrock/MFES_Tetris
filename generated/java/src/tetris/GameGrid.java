@@ -6,6 +6,7 @@ import org.overture.codegen.runtime.*;
 @SuppressWarnings("all")
 public class GameGrid {
   public static final Number HEIGHT = 22L;
+  public static final Number VISIBLE_HEIGHT = 20L;
   public static final Number WIDTH = 10L;
   public VDMSeq grid = buildEmptyGrid(GameGrid.WIDTH, GameGrid.HEIGHT);
 
@@ -16,16 +17,16 @@ public class GameGrid {
 
   public void addTetramino(final Tetramino tetramino) {
 
-    for (Iterator iterator_7 = SeqUtil.inds(tetramino.getCurrentMatrix()).iterator();
-        iterator_7.hasNext();
+    for (Iterator iterator_9 = SeqUtil.inds(tetramino.getCurrentMatrix()).iterator();
+        iterator_9.hasNext();
         ) {
-      Number tetraminoY = (Number) iterator_7.next();
+      Number tetraminoY = (Number) iterator_9.next();
       {
         final VDMSeq line =
             Utils.copy(((VDMSeq) Utils.get(tetramino.getCurrentMatrix(), tetraminoY)));
         {
-          for (Iterator iterator_8 = SeqUtil.inds(line).iterator(); iterator_8.hasNext(); ) {
-            Number tetraminoX = (Number) iterator_8.next();
+          for (Iterator iterator_10 = SeqUtil.inds(line).iterator(); iterator_10.hasNext(); ) {
+            Number tetraminoX = (Number) iterator_10.next();
             {
               final Number cellX = tetramino.x.longValue() - 1L + tetraminoX.longValue();
               final Number cellY = tetramino.y.longValue() + 1L - tetraminoY.longValue();
@@ -58,9 +59,9 @@ public class GameGrid {
   private static VDMSeq buildEmptyRow(final Number length) {
 
     VDMSeq seqCompResult_1 = SeqUtil.seq();
-    VDMSet set_1 = SetUtil.range(1L, length);
-    for (Iterator iterator_1 = set_1.iterator(); iterator_1.hasNext(); ) {
-      Number v = ((Number) iterator_1.next());
+    VDMSet set_3 = SetUtil.range(1L, length);
+    for (Iterator iterator_3 = set_3.iterator(); iterator_3.hasNext(); ) {
+      Number v = ((Number) iterator_3.next());
       if (v.longValue() > 0L) {
         seqCompResult_1.add(tetris.quotes.BlankQuote.getInstance());
       }
@@ -71,9 +72,9 @@ public class GameGrid {
   private static VDMSeq buildEmptyGrid(final Number width, final Number height) {
 
     VDMSeq seqCompResult_2 = SeqUtil.seq();
-    VDMSet set_2 = SetUtil.range(1L, height);
-    for (Iterator iterator_2 = set_2.iterator(); iterator_2.hasNext(); ) {
-      Number v = ((Number) iterator_2.next());
+    VDMSet set_4 = SetUtil.range(1L, height);
+    for (Iterator iterator_4 = set_4.iterator(); iterator_4.hasNext(); ) {
+      Number v = ((Number) iterator_4.next());
       if (v.longValue() > 0L) {
         seqCompResult_2.add(buildEmptyRow(width));
       }
@@ -86,6 +87,8 @@ public class GameGrid {
     return "GameGrid{"
         + "HEIGHT = "
         + Utils.toString(HEIGHT)
+        + ", VISIBLE_HEIGHT = "
+        + Utils.toString(VISIBLE_HEIGHT)
         + ", WIDTH = "
         + Utils.toString(WIDTH)
         + ", grid := "

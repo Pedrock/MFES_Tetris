@@ -6,8 +6,12 @@ import org.overture.codegen.runtime.*;
 @SuppressWarnings("all")
 public class Tetris {
   public static final Number LINES_PER_LEVEL = 20L;
+  private static final VDMMap mapNumLinesToScorePerLevel =
+      MapUtil.map(
+          new Maplet(1L, 40L), new Maplet(2L, 100L), new Maplet(3L, 300L), new Maplet(4L, 1200L));
   public GameGrid gameGrid = new GameGrid();
   public Tetramino tetramino = null;
+  public Tetramino nextTetramino = null;
   public Number score = 0L;
   public Number level = 0L;
   public Number numberOfLines = 0L;
@@ -17,6 +21,7 @@ public class Tetris {
 
     gameGrid = new GameGrid();
     tetramino = getRandomTetramino();
+    nextTetramino = getRandomTetramino();
     score = 0L;
     level = 0L;
     numberOfLines = 0L;
@@ -109,9 +114,9 @@ public class Tetris {
     {
       final VDMSeq line = Utils.copy(((VDMSeq) Utils.get(gameGrid.grid, GameGrid.HEIGHT)));
       Boolean existsExpResult_1 = false;
-      VDMSet set_3 = SeqUtil.inds(line);
-      for (Iterator iterator_3 = set_3.iterator(); iterator_3.hasNext() && !(existsExpResult_1); ) {
-        Number x = ((Number) iterator_3.next());
+      VDMSet set_5 = SeqUtil.inds(line);
+      for (Iterator iterator_5 = set_5.iterator(); iterator_5.hasNext() && !(existsExpResult_1); ) {
+        Number x = ((Number) iterator_5.next());
         existsExpResult_1 =
             !(Utils.equals(Utils.get(line, x), tetris.quotes.BlankQuote.getInstance()));
       }
@@ -122,7 +127,8 @@ public class Tetris {
     }
 
     if (Utils.equals(gameState, tetris.quotes.GameQuote.getInstance())) {
-      tetramino = getRandomTetramino();
+      tetramino = nextTetramino;
+      nextTetramino = getRandomTetramino();
     }
   }
 
@@ -140,16 +146,16 @@ public class Tetris {
       {
         {
           final VDMSeq line = Utils.copy(((VDMSeq) Utils.get(gameGrid.grid, y)));
-          Boolean forAllExpResult_1 = true;
-          VDMSet set_4 = SeqUtil.inds(line);
-          for (Iterator iterator_4 = set_4.iterator();
-              iterator_4.hasNext() && forAllExpResult_1;
+          Boolean forAllExpResult_3 = true;
+          VDMSet set_6 = SeqUtil.inds(line);
+          for (Iterator iterator_6 = set_6.iterator();
+              iterator_6.hasNext() && forAllExpResult_3;
               ) {
-            Number x = ((Number) iterator_4.next());
-            forAllExpResult_1 =
+            Number x = ((Number) iterator_6.next());
+            forAllExpResult_3 =
                 !(Utils.equals(Utils.get(line, x), tetris.quotes.BlankQuote.getInstance()));
           }
-          if (forAllExpResult_1) {
+          if (forAllExpResult_3) {
             gameGrid.removeLine(y);
             linesRemoved = linesRemoved.longValue() + 1L;
             y = y.longValue() - 1L;
@@ -214,58 +220,58 @@ public class Tetris {
 
   public Boolean tetraminoHasCollisionInCoords(final Number x, final Number y) {
 
-    for (Iterator iterator_9 = SeqUtil.inds(tetramino.getCurrentMatrix()).iterator();
-        iterator_9.hasNext();
+    for (Iterator iterator_11 = SeqUtil.inds(tetramino.getCurrentMatrix()).iterator();
+        iterator_11.hasNext();
         ) {
-      Number tetraminoY = (Number) iterator_9.next();
+      Number tetraminoY = (Number) iterator_11.next();
       {
         final VDMSeq line =
             Utils.copy(((VDMSeq) Utils.get(tetramino.getCurrentMatrix(), tetraminoY)));
         {
-          for (Iterator iterator_10 = SeqUtil.inds(line).iterator(); iterator_10.hasNext(); ) {
-            Number tetraminoX = (Number) iterator_10.next();
+          for (Iterator iterator_12 = SeqUtil.inds(line).iterator(); iterator_12.hasNext(); ) {
+            Number tetraminoX = (Number) iterator_12.next();
             {
               final Number cellX = x.longValue() - 1L + tetraminoX.longValue();
               final Number cellY = y.longValue() + 1L - tetraminoY.longValue();
               {
                 if (!(Utils.equals(
                     Utils.get(line, tetraminoX), tetris.quotes.BlankQuote.getInstance()))) {
-                  Boolean orResult_3 = false;
+                  Boolean orResult_4 = false;
 
                   if (cellX.longValue() < 1L) {
-                    orResult_3 = true;
+                    orResult_4 = true;
                   } else {
-                    Boolean orResult_4 = false;
+                    Boolean orResult_5 = false;
 
                     if (cellX.longValue() > GameGrid.WIDTH.longValue()) {
-                      orResult_4 = true;
+                      orResult_5 = true;
                     } else {
-                      Boolean orResult_5 = false;
+                      Boolean orResult_6 = false;
 
                       if (cellY.longValue() < 1L) {
-                        orResult_5 = true;
+                        orResult_6 = true;
                       } else {
-                        Boolean orResult_6 = false;
+                        Boolean orResult_7 = false;
 
                         if (cellY.longValue() > GameGrid.HEIGHT.longValue()) {
-                          orResult_6 = true;
+                          orResult_7 = true;
                         } else {
-                          orResult_6 =
+                          orResult_7 =
                               !(Utils.equals(
                                   gameGrid.getCell(cellX, cellY),
                                   tetris.quotes.BlankQuote.getInstance()));
                         }
 
-                        orResult_5 = orResult_6;
+                        orResult_6 = orResult_7;
                       }
 
-                      orResult_4 = orResult_5;
+                      orResult_5 = orResult_6;
                     }
 
-                    orResult_3 = orResult_4;
+                    orResult_4 = orResult_5;
                   }
 
-                  if (orResult_3) {
+                  if (orResult_4) {
                     return true;
                   }
                 }
@@ -284,14 +290,14 @@ public class Tetris {
       final VDMSeq tetraminoMatrix, final VDMSeq gameGrid_1, final Number x, final Number y) {
 
     Boolean existsExpResult_2 = false;
-    VDMSet set_5 = SeqUtil.inds(tetraminoMatrix);
-    for (Iterator iterator_5 = set_5.iterator(); iterator_5.hasNext() && !(existsExpResult_2); ) {
-      Number tetraminoY = ((Number) iterator_5.next());
+    VDMSet set_7 = SeqUtil.inds(tetraminoMatrix);
+    for (Iterator iterator_7 = set_7.iterator(); iterator_7.hasNext() && !(existsExpResult_2); ) {
+      Number tetraminoY = ((Number) iterator_7.next());
       Boolean existsExpResult_3 = false;
-      VDMSet set_6 = SeqUtil.inds(((VDMSeq) Utils.get(tetraminoMatrix, tetraminoY)));
-      for (Iterator iterator_6 = set_6.iterator(); iterator_6.hasNext() && !(existsExpResult_3); ) {
-        Number tetraminoX = ((Number) iterator_6.next());
-        Boolean andResult_7 = false;
+      VDMSet set_8 = SeqUtil.inds(((VDMSeq) Utils.get(tetraminoMatrix, tetraminoY)));
+      for (Iterator iterator_8 = set_8.iterator(); iterator_8.hasNext() && !(existsExpResult_3); ) {
+        Number tetraminoX = ((Number) iterator_8.next());
+        Boolean andResult_10 = false;
 
         if (!(Utils.equals(
             Utils.get(((VDMSeq) Utils.get(tetraminoMatrix, tetraminoY)), tetraminoX),
@@ -299,47 +305,47 @@ public class Tetris {
           final Number cellX = x.longValue() - 1L + tetraminoX.longValue();
           final Number cellY = y.longValue() + 1L - tetraminoY.longValue();
 
-          Boolean orResult_7 = false;
+          Boolean orResult_8 = false;
 
           if (cellX.longValue() < 1L) {
-            orResult_7 = true;
+            orResult_8 = true;
           } else {
-            Boolean orResult_8 = false;
+            Boolean orResult_9 = false;
 
             if (cellX.longValue() > GameGrid.WIDTH.longValue()) {
-              orResult_8 = true;
+              orResult_9 = true;
             } else {
-              Boolean orResult_9 = false;
+              Boolean orResult_10 = false;
 
               if (cellY.longValue() < 1L) {
-                orResult_9 = true;
+                orResult_10 = true;
               } else {
-                Boolean orResult_10 = false;
+                Boolean orResult_11 = false;
 
                 if (cellY.longValue() > GameGrid.HEIGHT.longValue()) {
-                  orResult_10 = true;
+                  orResult_11 = true;
                 } else {
-                  orResult_10 =
+                  orResult_11 =
                       !(Utils.equals(
                           Utils.get(((VDMSeq) Utils.get(gameGrid_1, cellY)), cellX),
                           tetris.quotes.BlankQuote.getInstance()));
                 }
 
-                orResult_9 = orResult_10;
+                orResult_10 = orResult_11;
               }
 
-              orResult_8 = orResult_9;
+              orResult_9 = orResult_10;
             }
 
-            orResult_7 = orResult_8;
+            orResult_8 = orResult_9;
           }
 
-          if (orResult_7) {
-            andResult_7 = true;
+          if (orResult_8) {
+            andResult_10 = true;
           }
         }
 
-        existsExpResult_3 = andResult_7;
+        existsExpResult_3 = andResult_10;
       }
       existsExpResult_2 = existsExpResult_3;
     }
@@ -348,27 +354,8 @@ public class Tetris {
 
   private static Number calcScore(final Number lines, final Number level_1) {
 
-    if (Utils.equals(lines, 0L)) {
-      return 0L;
-
-    } else {
-      if (Utils.equals(lines, 1L)) {
-        return 40L * (level_1.longValue() + 1L);
-
-      } else {
-        if (Utils.equals(lines, 2L)) {
-          return 100L * (level_1.longValue() + 1L);
-
-        } else {
-          if (Utils.equals(lines, 3L)) {
-            return 300L * (level_1.longValue() + 1L);
-
-          } else {
-            return 1200L * (level_1.longValue() + 1L);
-          }
-        }
-      }
-    }
+    return ((Number) Utils.get(mapNumLinesToScorePerLevel, lines)).longValue()
+        * (level_1.longValue() + 1L);
   }
 
   public String toString() {
@@ -376,10 +363,14 @@ public class Tetris {
     return "Tetris{"
         + "LINES_PER_LEVEL = "
         + Utils.toString(LINES_PER_LEVEL)
+        + ", mapNumLinesToScorePerLevel = "
+        + Utils.toString(mapNumLinesToScorePerLevel)
         + ", gameGrid := "
         + Utils.toString(gameGrid)
         + ", tetramino := "
         + Utils.toString(tetramino)
+        + ", nextTetramino := "
+        + Utils.toString(nextTetramino)
         + ", score := "
         + Utils.toString(score)
         + ", level := "
