@@ -7,11 +7,13 @@ import org.overture.codegen.runtime.*;
 public class Tetris {
   public GameGrid gameGrid = new GameGrid();
   public Tetramino tetramino = getRandomTetramino();
+  public Number score = 0L;
 
   public void begin() {
 
     gameGrid = new GameGrid();
     tetramino = getRandomTetramino();
+    score = 0L;
   }
 
   public void tick() {
@@ -36,6 +38,24 @@ public class Tetris {
     if (!(tetraminoHasCollisionInCoords(tetramino.x.longValue() - 1L, tetramino.y))) {
       tetramino.x = tetramino.x.longValue() - 1L;
     }
+  }
+
+  public void hardDrop() {
+
+    Boolean whileCond_1 = true;
+    while (whileCond_1) {
+      whileCond_1 = !(tetraminoHasCollisionInCoords(tetramino.x, tetramino.y.longValue() - 1L));
+      if (!(whileCond_1)) {
+        break;
+      }
+
+      {
+        tetramino.y = tetramino.y.longValue() - 1L;
+      }
+    }
+
+    gameGrid.addTetramino(tetramino);
+    tetramino = getRandomTetramino();
   }
 
   public void rotateRight() {
@@ -224,6 +244,8 @@ public class Tetris {
         + Utils.toString(gameGrid)
         + ", tetramino := "
         + Utils.toString(tetramino)
+        + ", score := "
+        + Utils.toString(score)
         + "}";
   }
 }

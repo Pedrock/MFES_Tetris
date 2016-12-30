@@ -16,7 +16,7 @@ import tetris.GameGrid;
 import tetris.Tetramino;
 import tetris.Tetris;
 
-public class TetrisPanel extends JPanel {
+public class TetrisPanel extends JPanel implements KeyListener {
 	
 	private static HashMap<String, Color> colorMap = new HashMap<String, Color>();
 	static {
@@ -24,7 +24,7 @@ public class TetrisPanel extends JPanel {
 		colorMap.put("<Cyan>", Color.CYAN);
 		colorMap.put("<Green>", Color.GREEN);
 		colorMap.put("<Orange>", Color.ORANGE);
-		colorMap.put("<Purple>", Color.PINK); // TODO - Mudar
+		colorMap.put("<Purple>", Color.PINK);
 		colorMap.put("<Red>", Color.RED);
 		colorMap.put("<Yellow>", Color.YELLOW);
 	}
@@ -128,44 +128,50 @@ public class TetrisPanel extends JPanel {
 		drawTetramino(g);
 	}
 	
+	public boolean processKeyPress(KeyEvent e) {
+		switch (e.getKeyCode()) {
+			case KeyEvent.VK_UP:
+				tetris.rotateRight();
+				return true;
+			case KeyEvent.VK_DOWN:
+				tetris.rotateLeft();
+				return true;
+			case KeyEvent.VK_LEFT:
+				tetris.moveLeft();
+				return true;
+			case KeyEvent.VK_RIGHT:
+				tetris.moveRight();
+				return true;
+			case KeyEvent.VK_SPACE:
+				tetris.hardDrop();
+				return true;
+			default:
+				return false;
+		}
+	}
+	
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Tetris");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(LEFT_MARGIN+(WIDTH+2)*SQUARE_SIZE, TOP_MARGIN+SQUARE_SIZE*(HEIGHT+2));
 		final TetrisPanel panel = new TetrisPanel();
 		frame.add(panel);
+		frame.addKeyListener(panel);
 		frame.setVisible(true);
-		
-		frame.addKeyListener(new KeyListener() {
-			public void keyTyped(KeyEvent e) {
-			}
-			
-			public void keyPressed(KeyEvent e) {
-				switch (e.getKeyCode()) {
-				case KeyEvent.VK_UP:
-					tetris.rotateLeft();
-					frame.repaint();
-					break;
-				case KeyEvent.VK_DOWN:
-					tetris.rotateRight();
-					frame.repaint();
-					break;
-				case KeyEvent.VK_LEFT:
-					tetris.moveLeft();
-					frame.repaint();
-					break;
-				case KeyEvent.VK_RIGHT:
-					tetris.moveRight();
-					frame.repaint();
-					break;
-				case KeyEvent.VK_SPACE:
-					// TODO
-					break;
-				} 
-			}
-			
-			public void keyReleased(KeyEvent e) {
-			}
-		});
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) { } 
+	
+	@Override
+	public void keyPressed(KeyEvent e) {
+		System.out.println("press");
+		if (processKeyPress(e)) repaint();
+		System.out.println(tetris.tetramino.rotation);
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		System.out.println("release");
 	}
 }

@@ -18,6 +18,8 @@ public gameGrid : GameGrid := new GameGrid();
 -- Tetraminó em jogo
 public tetramino : Tetramino := getRandomTetramino();
 
+public score : nat := 0;
+
 inv not hasCollision(tetramino.rotationsList(tetramino.rotation), gameGrid.grid, tetramino.x, tetramino.y);
 
 operations
@@ -27,6 +29,7 @@ public begin : () ==> ()
 begin() == (
 	gameGrid := new GameGrid();
 	tetramino := getRandomTetramino();
+	score := 0;
 );
 
 public tick : () ==> ()
@@ -49,6 +52,15 @@ public moveLeft : () ==> ()
 moveLeft() == (
 	if not tetraminoHasCollisionInCoords(tetramino.x - 1, tetramino.y) then
 		tetramino.x := tetramino.x - 1;
+);
+
+public hardDrop : () ==> ()
+hardDrop() == (
+	while not tetraminoHasCollisionInCoords(tetramino.x, tetramino.y - 1) do (
+		tetramino.y := tetramino.y - 1;
+	);
+	gameGrid.addTetramino(tetramino);
+	tetramino := getRandomTetramino()
 );
 
 public rotateRight : () ==> ()

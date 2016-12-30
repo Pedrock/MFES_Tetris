@@ -96,4 +96,14 @@ testAdd2Tetraminos() == (
 	assertTrue(tetris.tetramino.y = 22); -- Novo tetraminó
 );
 
+public testHardDrop: () ==> ()
+testHardDrop() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino(2); -- Tetramino J
+	assertTrue(tetris.tetramino.y = 22);
+	tetris.hardDrop();
+	assertTrue(tetris.gameGrid.grid(1)(5) = <Blue>);
+	assertTrue(tetris.tetramino.y = 22); -- Novo tetraminó
+);
+
 end UnitTests
