@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.image.ColorModel;
 import java.util.HashMap;
 
 import javax.swing.JFrame;
@@ -13,9 +12,10 @@ import javax.swing.JPanel;
 import org.overture.codegen.runtime.VDMSeq;
 
 import tetris.GameGrid;
-import tetris.Tetramino;
 import tetris.Tetris;
+import tetris.quotes.GameOverQuote;
 
+@SuppressWarnings("serial")
 public class TetrisPanel extends JPanel implements KeyListener {
 	
 	private static HashMap<String, Color> colorMap = new HashMap<String, Color>();
@@ -96,6 +96,7 @@ public class TetrisPanel extends JPanel implements KeyListener {
 	}
 	
 	private void drawTetramino(Graphics g) {
+		if (tetris.tetramino == null) return;
 		VDMSeq matrix = tetris.tetramino.getCurrentMatrix();
 		int height = matrix.size();
 		int offsetX = tetris.tetramino.x.intValue() - 1;
@@ -123,7 +124,12 @@ public class TetrisPanel extends JPanel implements KeyListener {
 		
 		// Display the score
 		g.setColor(Color.WHITE);
-		g.drawString("0", 200, SQUARE_SIZE);
+		g.drawString("Level: "+tetris.level + "    Score: "+tetris.score, 200, SQUARE_SIZE);
+		
+		if (tetris.gameState instanceof GameOverQuote) {
+			g.setColor(Color.RED);
+			g.drawString("GAME OVER", 50, SQUARE_SIZE);
+		}
 		
 		drawTetramino(g);
 	}
@@ -165,13 +171,9 @@ public class TetrisPanel extends JPanel implements KeyListener {
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
-		System.out.println("press");
 		if (processKeyPress(e)) repaint();
-		System.out.println(tetris.tetramino.rotation);
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
-		System.out.println("release");
-	}
+	public void keyReleased(KeyEvent e) { }
 }

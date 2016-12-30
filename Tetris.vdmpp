@@ -6,9 +6,11 @@ class Tetris
 
 types
 
+public GameState = <NotStarted> | <Game> | <GameOver>;
 
 values
 
+public LINES_PER_LEVEL : nat1 = 20;
 
 instance variables
 
@@ -16,11 +18,17 @@ instance variables
 public gameGrid : GameGrid := new GameGrid();
 
 -- Tetraminó em jogo
-public tetramino : Tetramino := getRandomTetramino();
+public tetramino : [Tetramino] := nil;
 
 public score : nat := 0;
 
-inv not hasCollision(tetramino.rotationsList(tetramino.rotation), gameGrid.grid, tetramino.x, tetramino.y);
+public level : nat := 0;
+
+public numberOfLines : nat := 0;
+
+public gameState : GameState := <NotStarted>;
+
+inv tetramino = nil or not hasCollision(tetramino.rotationsList(tetramino.rotation), gameGrid.grid, tetramino.x, tetramino.y);
 
 operations
 
@@ -30,44 +38,96 @@ begin() == (
 	gameGrid := new GameGrid();
 	tetramino := getRandomTetramino();
 	score := 0;
+	level := 0;
+	numberOfLines := 0;
+	gameState := <Game>;
 );
 
 public tick : () ==> ()
 tick() == (
+	if (gameState <> <Game>) then return;
 	if not tetraminoHasCollisionInCoords(tetramino.x, tetramino.y - 1) then
 		tetramino.y := tetramino.y - 1
-	else (
-		gameGrid.addTetramino(tetramino);
-		tetramino := getRandomTetramino()
-	)
+	else
+		addTetraminoToGrid();
 );
 
 public moveRight : () ==> ()
 moveRight() == (
+	if (gameState <> <Game>) then return;
 	if not tetraminoHasCollisionInCoords(tetramino.x + 1, tetramino.y) then
 		tetramino.x := tetramino.x + 1;
 );
 
 public moveLeft : () ==> ()
 moveLeft() == (
+	if (gameState <> <Game>) then return;
 	if not tetraminoHasCollisionInCoords(tetramino.x - 1, tetramino.y) then
 		tetramino.x := tetramino.x - 1;
 );
 
-public hardDrop : () ==> ()
-hardDrop() == (
-	while not tetraminoHasCollisionInCoords(tetramino.x, tetramino.y - 1) do (
-		tetramino.y := tetramino.y - 1;
-	);
-	gameGrid.addTetramino(tetramino);
-	tetramino := getRandomTetramino()
+public rotateRight : () ==> ()
+rotateRight() == (
+	if (gameState <> <Game>) then return;
+	tryRotation(tetramino.getRightRotation())
 );
 
-public rotateRight : () ==> ()
-rotateRight() == tryRotation(tetramino.getRightRotation());
-
 public rotateLeft : () ==> ()
-rotateLeft() == tryRotation(tetramino.getLeftRotation());
+rotateLeft() == (
+	if (gameState <> <Game>) then return;
+	tryRotation(tetramino.getLeftRotation())
+);
+
+public hardDrop : () ==> ()
+hardDrop() == (
+	if (gameState <> <Game>) then return;
+	while canMoveDown() do (
+		tetramino.y := tetramino.y - 1;
+	);
+	addTetraminoToGrid()
+);
+
+private canMoveDown : () ==> bool
+canMoveDown() == (
+	return not tetraminoHasCollisionInCoords(tetramino.x, tetramino.y - 1)
+);
+
+private addTetraminoToGrid : () ==> ()
+addTetraminoToGrid() == (
+	gameGrid.addTetramino(tetramino);
+	removeCompleteLines();
+	let line = gameGrid.grid(GameGrid`HEIGHT) in (
+		if exists x in set inds line & line(x) <> <Blank> then (
+			gameState := <GameOver>;
+			tetramino := nil;
+		)
+	);
+	if gameState = <Game> then
+		tetramino := getRandomTetramino();
+);
+
+private removeCompleteLines : () ==> ()
+removeCompleteLines() == (
+	dcl linesRemoved : nat := 0;
+	dcl y : nat := 1;
+	while (y <= len gameGrid.grid) do (
+		let line = gameGrid.grid(y) in (
+			if (forall x in set inds line & line(x) <> <Blank>) then (
+				gameGrid.removeLine(y);
+				linesRemoved := linesRemoved + 1;
+				y := y - 1;
+			)
+		);
+		y := y + 1;
+	);
+	if (linesRemoved > 0) then (
+		atomic(
+			score := score + calcScore(linesRemoved, level);
+			numberOfLines := numberOfLines + linesRemoved;
+			level := floor (numberOfLines / LINES_PER_LEVEL)
+		);
+	)
+);
 
 private tryRotation : Tetramino`RotationResult ==> ()
 tryRotation(result) ==  (
@@ -86,7 +146,7 @@ tryRotation(result) ==  (
 );
 
 --Escolha aleatória do tetraminó em jogo
-public getRandomTetramino : () ==> Tetramino
+private getRandomTetramino : () ==> Tetramino
 getRandomTetramino() == return new Tetramino(MATH`rand(Tetramino`getNumber()-1)+1);
 	
 -- Verifica se o tetraminó em jogo tem colisão nas coordenadas (x, y)
@@ -114,7 +174,7 @@ RESULT = hasCollision(tetramino.rotationsList(tetramino.rotation), gameGrid.grid
 
 functions
 
-public hasCollision : Tetramino`TetraminoMatrix * GameGrid`Grid * int * int -> bool
+private hasCollision : Tetramino`TetraminoMatrix * GameGrid`Grid * int * int -> bool
 hasCollision(tetraminoMatrix, gameGrid, x, y) == (
 	exists tetraminoY in set inds tetraminoMatrix &
 		exists tetraminoX in set inds tetraminoMatrix(tetraminoY)
@@ -128,6 +188,14 @@ hasCollision(tetraminoMatrix, gameGrid, x, y) == (
 			)
 );
 
-
+private calcScore : nat*nat -> nat
+calcScore(lines, level) == (
+	if (lines = 0) then 0
+	else if (lines = 1) then 40*(level+1)
+	else if (lines = 2) then 100*(level+1)
+	else if (lines = 3) then 300*(level+1)
+	else 1200*(level+1)
+)
+pre lines <= 4;
 
 end Tetris

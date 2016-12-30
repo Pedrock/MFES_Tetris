@@ -50,6 +50,14 @@ addTetramino(tetramino) == (
 	)
 );
 
+public removeLine : nat1 ==> ()
+removeLine(y) == (
+	for i = y to HEIGHT - 1 do (
+		grid(i) := grid(i + 1);
+	);
+	grid(HEIGHT) := buildEmptyRow(WIDTH);
+);
+
 functions
 
 -- Criação de uma linha da grelha vazia

@@ -16,16 +16,16 @@ public class GameGrid {
 
   public void addTetramino(final Tetramino tetramino) {
 
-    for (Iterator iterator_5 = SeqUtil.inds(tetramino.getCurrentMatrix()).iterator();
-        iterator_5.hasNext();
+    for (Iterator iterator_7 = SeqUtil.inds(tetramino.getCurrentMatrix()).iterator();
+        iterator_7.hasNext();
         ) {
-      Number tetraminoY = (Number) iterator_5.next();
+      Number tetraminoY = (Number) iterator_7.next();
       {
         final VDMSeq line =
             Utils.copy(((VDMSeq) Utils.get(tetramino.getCurrentMatrix(), tetraminoY)));
         {
-          for (Iterator iterator_6 = SeqUtil.inds(line).iterator(); iterator_6.hasNext(); ) {
-            Number tetraminoX = (Number) iterator_6.next();
+          for (Iterator iterator_8 = SeqUtil.inds(line).iterator(); iterator_8.hasNext(); ) {
+            Number tetraminoX = (Number) iterator_8.next();
             {
               final Number cellX = tetramino.x.longValue() - 1L + tetraminoX.longValue();
               final Number cellY = tetramino.y.longValue() + 1L - tetraminoY.longValue();
@@ -41,6 +41,16 @@ public class GameGrid {
         }
       }
     }
+  }
+
+  public void removeLine(final Number y) {
+
+    long toVar_1 = GameGrid.HEIGHT.longValue() - 1L;
+
+    for (Long i = y.longValue(); i <= toVar_1; i++) {
+      Utils.mapSeqUpdate(grid, i, Utils.copy(((VDMSeq) Utils.get(grid, i.longValue() + 1L))));
+    }
+    Utils.mapSeqUpdate(grid, GameGrid.HEIGHT, buildEmptyRow(GameGrid.WIDTH));
   }
 
   public GameGrid() {}

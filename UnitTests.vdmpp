@@ -106,4 +106,29 @@ testHardDrop() == (
 	assertTrue(tetris.tetramino.y = 22); -- Novo tetraminó
 );
 
+public testCompletedLine: () ==> ()
+testCompletedLine() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino(1);
+	tetris.moveLeft(); tetris.moveLeft(); tetris.moveLeft(); 
+	tetris.hardDrop();
+	tetris.tetramino := new Tetramino(1);
+	tetris.moveRight();
+	tetris.hardDrop();
+	assertTrue(tetris.gameGrid.grid(1)(1) = <Cyan>);
+	assertTrue(tetris.gameGrid.grid(1)(8) = <Cyan>);
+	tetris.tetramino := new Tetramino(4); -- Square
+	tetris.moveRight(); tetris.moveRight();
+	tetris.moveRight(); tetris.moveRight();
+	tetris.hardDrop();
+	for i = 1 to GameGrid`HEIGHT do (
+		assertTrue(tetris.gameGrid.grid(i)(1) = <Blank>);
+		assertTrue(tetris.gameGrid.grid(i)(8) = <Blank>);
+	);
+	assertTrue(tetris.gameGrid.grid(1)(10) = <Yellow>);
+	assertTrue(tetris.gameGrid.grid(2)(10) = <Blank>);
+	assertTrue(tetris.level = 0);
+	assertTrue(tetris.score = 40);
+);
+
 end UnitTests
