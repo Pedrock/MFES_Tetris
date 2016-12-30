@@ -111,12 +111,50 @@ public class TetrisPanel extends JPanel implements KeyListener {
 		}
 	}
 	
+	private void drawNextTetramino(Graphics g) {
+		
+		int offsetX = LEFT_MARGIN + (WIDTH + 1)*SQUARE_SIZE;
+		int offsetY = TOP_MARGIN;
+		
+		int squareSize = SQUARE_SIZE / 2;
+		
+		g.setColor(Color.DARK_GRAY);
+		g.drawRect(offsetX, offsetY, squareSize*4, squareSize*4);
+		
+		if (tetris.nextTetramino == null) return;
+	
+		VDMSeq matrix = tetris.nextTetramino.getCurrentMatrix();
+		int height = matrix.size();
+		
+		if (height < 4) {
+			offsetY += squareSize;
+			if (height < 3)
+				offsetX += squareSize;
+		}
+		
+		for (int y = 0; y < height; y++) {
+			VDMSeq line = (VDMSeq)matrix.get(y);
+			int width = ((VDMSeq)matrix.get(y)).size();
+			for (int x = 0; x < width; x++) {
+				Color color = colorMap.get(line.get(x).toString());
+				if (color != null)
+				{
+					g.setColor(color);
+					g.fillRect(offsetX + squareSize*x, 
+							   offsetY + squareSize*y, 
+							   (squareSize-1), 
+							   (squareSize-1));
+				}
+			}
+		}
+	}
+	
 	@Override 
 	public void paintComponent(Graphics g)
 	{
 		// Background
 		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, LEFT_MARGIN + SQUARE_SIZE*(WIDTH+2), TOP_MARGIN + SQUARE_SIZE*(HEIGHT+1));
+		g.fillRect(0, 0, getWidth(), getHeight());
 		
 		drawGridLines(g);
 		
@@ -131,6 +169,7 @@ public class TetrisPanel extends JPanel implements KeyListener {
 			g.drawString("GAME OVER", 50, SQUARE_SIZE);
 		}
 		
+		drawNextTetramino(g);
 		drawTetramino(g);
 	}
 	
@@ -159,7 +198,7 @@ public class TetrisPanel extends JPanel implements KeyListener {
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Tetris");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(LEFT_MARGIN+(WIDTH+2)*SQUARE_SIZE, TOP_MARGIN+SQUARE_SIZE*(HEIGHT+2));
+		frame.setSize(2*LEFT_MARGIN+(WIDTH+4)*SQUARE_SIZE, 2*TOP_MARGIN+SQUARE_SIZE*(HEIGHT+1));
 		final TetrisPanel panel = new TetrisPanel();
 		frame.add(panel);
 		frame.addKeyListener(panel);
