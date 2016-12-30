@@ -1,4 +1,4 @@
-package tetris;
+package vdmtetris;
 
 import java.util.*;
 import org.overture.codegen.runtime.*;

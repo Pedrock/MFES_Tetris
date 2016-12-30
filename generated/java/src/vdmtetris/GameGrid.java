@@ -1,4 +1,4 @@
-package tetris;
+package vdmtetris;
 
 import java.util.*;
 import org.overture.codegen.runtime.*;
@@ -32,7 +32,7 @@ public class GameGrid {
               final Number cellY = tetramino.y.longValue() + 1L - tetraminoY.longValue();
               {
                 if (!(Utils.equals(
-                    Utils.get(line, tetraminoX), tetris.quotes.BlankQuote.getInstance()))) {
+                    Utils.get(line, tetraminoX), vdmtetris.quotes.BlankQuote.getInstance()))) {
                   Utils.mapSeqUpdate(
                       ((VDMSeq) Utils.get(grid, cellY)), cellX, Utils.get(line, tetraminoX));
                 }
@@ -63,7 +63,7 @@ public class GameGrid {
     for (Iterator iterator_3 = set_3.iterator(); iterator_3.hasNext(); ) {
       Number v = ((Number) iterator_3.next());
       if (v.longValue() > 0L) {
-        seqCompResult_1.add(tetris.quotes.BlankQuote.getInstance());
+        seqCompResult_1.add(vdmtetris.quotes.BlankQuote.getInstance());
       }
     }
     return Utils.copy(seqCompResult_1);

@@ -1,4 +1,4 @@
-package tetris;
+package vdmtetris;
 
 import java.util.*;
 import org.overture.codegen.runtime.*;
@@ -15,7 +15,7 @@ public class Tetris {
   public Number score = 0L;
   public Number level = 0L;
   public Number numberOfLines = 0L;
-  public Object gameState = tetris.quotes.NotStartedQuote.getInstance();
+  public Object gameState = vdmtetris.quotes.NotStartedQuote.getInstance();
 
   public void begin() {
 
@@ -25,12 +25,12 @@ public class Tetris {
     score = 0L;
     level = 0L;
     numberOfLines = 0L;
-    gameState = tetris.quotes.GameQuote.getInstance();
+    gameState = vdmtetris.quotes.GameQuote.getInstance();
   }
 
   public void tick() {
 
-    if (!(Utils.equals(gameState, tetris.quotes.GameQuote.getInstance()))) {
+    if (!(Utils.equals(gameState, vdmtetris.quotes.GameQuote.getInstance()))) {
       return;
     }
 
@@ -56,7 +56,7 @@ public class Tetris {
 
   public void moveRight() {
 
-    if (!(Utils.equals(gameState, tetris.quotes.GameQuote.getInstance()))) {
+    if (!(Utils.equals(gameState, vdmtetris.quotes.GameQuote.getInstance()))) {
       return;
     }
 
@@ -67,7 +67,7 @@ public class Tetris {
 
   public void moveLeft() {
 
-    if (!(Utils.equals(gameState, tetris.quotes.GameQuote.getInstance()))) {
+    if (!(Utils.equals(gameState, vdmtetris.quotes.GameQuote.getInstance()))) {
       return;
     }
 
@@ -78,7 +78,7 @@ public class Tetris {
 
   public void rotateRight() {
 
-    if (!(Utils.equals(gameState, tetris.quotes.GameQuote.getInstance()))) {
+    if (!(Utils.equals(gameState, vdmtetris.quotes.GameQuote.getInstance()))) {
       return;
     }
 
@@ -87,7 +87,7 @@ public class Tetris {
 
   public void rotateLeft() {
 
-    if (!(Utils.equals(gameState, tetris.quotes.GameQuote.getInstance()))) {
+    if (!(Utils.equals(gameState, vdmtetris.quotes.GameQuote.getInstance()))) {
       return;
     }
 
@@ -96,7 +96,7 @@ public class Tetris {
 
   public void hardDrop() {
 
-    if (!(Utils.equals(gameState, tetris.quotes.GameQuote.getInstance()))) {
+    if (!(Utils.equals(gameState, vdmtetris.quotes.GameQuote.getInstance()))) {
       return;
     }
 
@@ -131,15 +131,15 @@ public class Tetris {
       for (Iterator iterator_5 = set_5.iterator(); iterator_5.hasNext() && !(existsExpResult_1); ) {
         Number x = ((Number) iterator_5.next());
         existsExpResult_1 =
-            !(Utils.equals(Utils.get(line, x), tetris.quotes.BlankQuote.getInstance()));
+            !(Utils.equals(Utils.get(line, x), vdmtetris.quotes.BlankQuote.getInstance()));
       }
       if (existsExpResult_1) {
-        gameState = tetris.quotes.GameOverQuote.getInstance();
+        gameState = vdmtetris.quotes.GameOverQuote.getInstance();
         tetramino = null;
       }
     }
 
-    if (Utils.equals(gameState, tetris.quotes.GameQuote.getInstance())) {
+    if (Utils.equals(gameState, vdmtetris.quotes.GameQuote.getInstance())) {
       tetramino = nextTetramino;
       nextTetramino = getRandomTetramino();
     }
@@ -166,7 +166,7 @@ public class Tetris {
               ) {
             Number x = ((Number) iterator_6.next());
             forAllExpResult_3 =
-                !(Utils.equals(Utils.get(line, x), tetris.quotes.BlankQuote.getInstance()));
+                !(Utils.equals(Utils.get(line, x), vdmtetris.quotes.BlankQuote.getInstance()));
           }
           if (forAllExpResult_3) {
             gameGrid.removeLine(y);
@@ -248,7 +248,7 @@ public class Tetris {
               final Number cellY = y.longValue() + 1L - tetraminoY.longValue();
               {
                 if (!(Utils.equals(
-                    Utils.get(line, tetraminoX), tetris.quotes.BlankQuote.getInstance()))) {
+                    Utils.get(line, tetraminoX), vdmtetris.quotes.BlankQuote.getInstance()))) {
                   Boolean orResult_4 = false;
 
                   if (cellX.longValue() < 1L) {
@@ -272,7 +272,7 @@ public class Tetris {
                           orResult_7 =
                               !(Utils.equals(
                                   gameGrid.getCell(cellX, cellY),
-                                  tetris.quotes.BlankQuote.getInstance()));
+                                  vdmtetris.quotes.BlankQuote.getInstance()));
                         }
 
                         orResult_6 = orResult_7;
@@ -314,7 +314,7 @@ public class Tetris {
 
         if (!(Utils.equals(
             Utils.get(((VDMSeq) Utils.get(tetraminoMatrix, tetraminoY)), tetraminoX),
-            tetris.quotes.BlankQuote.getInstance()))) {
+            vdmtetris.quotes.BlankQuote.getInstance()))) {
           final Number cellX = x.longValue() - 1L + tetraminoX.longValue();
           final Number cellY = y.longValue() + 1L - tetraminoY.longValue();
 
@@ -341,7 +341,7 @@ public class Tetris {
                   orResult_11 =
                       !(Utils.equals(
                           Utils.get(((VDMSeq) Utils.get(gameGrid_1, cellY)), cellX),
-                          tetris.quotes.BlankQuote.getInstance()));
+                          vdmtetris.quotes.BlankQuote.getInstance()));
                 }
 
                 orResult_10 = orResult_11;

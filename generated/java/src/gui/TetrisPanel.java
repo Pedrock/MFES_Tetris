@@ -11,9 +11,9 @@ import javax.swing.JPanel;
 
 import org.overture.codegen.runtime.VDMSeq;
 
-import tetris.GameGrid;
-import tetris.Tetris;
-import tetris.quotes.GameOverQuote;
+import vdmtetris.GameGrid;
+import vdmtetris.Tetris;
+import vdmtetris.quotes.GameOverQuote;
 
 @SuppressWarnings("serial")
 public class TetrisPanel extends JPanel implements KeyListener {

@@ -1,23 +1,23 @@
-package tetris.quotes;
+package vdmtetris.quotes;
 
 import org.overture.codegen.runtime.*;
 
 @SuppressWarnings("all")
-public class BlueQuote {
+public class RedQuote {
   private static int hc = 0;
-  private static BlueQuote instance = null;
+  private static RedQuote instance = null;
 
-  public BlueQuote() {
+  public RedQuote() {
 
     if (Utils.equals(hc, 0)) {
       hc = super.hashCode();
     }
   }
 
-  public static BlueQuote getInstance() {
+  public static RedQuote getInstance() {
 
     if (Utils.equals(instance, null)) {
-      instance = new BlueQuote();
+      instance = new RedQuote();
     }
 
     return instance;
@@ -30,11 +30,11 @@ public class BlueQuote {
 
   public boolean equals(final Object obj) {
 
-    return obj instanceof BlueQuote;
+    return obj instanceof RedQuote;
   }
 
   public String toString() {
 
-    return "<Blue>";
+    return "<Red>";
   }
 }
