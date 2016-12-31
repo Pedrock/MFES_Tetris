@@ -115,6 +115,29 @@ public class Tetris {
     addTetraminoToGrid();
   }
 
+  public Number getGhostPieceHeight() {
+
+    if (!(Utils.equals(gameState, vdmtetris.quotes.GameQuote.getInstance()))) {
+      return null;
+
+    } else {
+      Number y = tetramino.y;
+      VDMSeq matrix = tetramino.getCurrentMatrix();
+      Boolean whileCond_2 = true;
+      while (whileCond_2) {
+        whileCond_2 =
+            !(hasCollision(Utils.copy(matrix), gameGrid.grid, tetramino.x, y.longValue() - 1L));
+        if (!(whileCond_2)) {
+          break;
+        }
+
+        y = y.longValue() - 1L;
+      }
+
+      return y;
+    }
+  }
+
   private Boolean canMoveDown() {
 
     return !(tetraminoHasCollisionInCoords(tetramino.x, tetramino.y.longValue() - 1L));
@@ -149,10 +172,10 @@ public class Tetris {
 
     Number linesRemoved = 0L;
     Number y = 1L;
-    Boolean whileCond_2 = true;
-    while (whileCond_2) {
-      whileCond_2 = y.longValue() <= gameGrid.grid.size();
-      if (!(whileCond_2)) {
+    Boolean whileCond_3 = true;
+    while (whileCond_3) {
+      whileCond_3 = y.longValue() <= gameGrid.grid.size();
+      if (!(whileCond_3)) {
         break;
       }
 
@@ -393,5 +416,42 @@ public class Tetris {
         + ", gameState := "
         + Utils.toString(gameState)
         + "}";
+  }
+
+  public static class Point implements Record {
+    public Number x;
+    public Number y;
+
+    public Point(final Number _x, final Number _y) {
+
+      x = _x;
+      y = _y;
+    }
+
+    public boolean equals(final Object obj) {
+
+      if (!(obj instanceof Point)) {
+        return false;
+      }
+
+      Point other = ((Point) obj);
+
+      return (Utils.equals(x, other.x)) && (Utils.equals(y, other.y));
+    }
+
+    public int hashCode() {
+
+      return Utils.hashCode(x, y);
+    }
+
+    public Point copy() {
+
+      return new Point(x, y);
+    }
+
+    public String toString() {
+
+      return "mk_Tetris`Point" + Utils.formatFields(x, y);
+    }
   }
 }

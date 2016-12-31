@@ -9,6 +9,9 @@ types
 -- Vários estados do jogo
 public GameState = <NotStarted> | <Game> | <GameOver>;
 
+public Point:: x : int
+							 y : int;
+
 values
 
 -- Número de linhas a remover para passar para o nível seguinte
@@ -120,6 +123,20 @@ hardDrop() == (
 		tetramino.y := tetramino.y - 1;
 	);
 	addTetraminoToGrid()
+);
+
+-- Devolve a altura a que deve ficar a ghost piece
+-- http://tetris.wikia.com/wiki/Ghost_piece
+public getGhostPieceHeight : () ==> [int]
+getGhostPieceHeight() == (
+	if gameState <> <Game> then return nil
+	else (
+		dcl y : int := tetramino.y;
+		dcl matrix : Tetramino`TetraminoMatrix := tetramino.getCurrentMatrix();
+		while not hasCollision(matrix, gameGrid.grid, tetramino.x, y - 1) do
+			y := y - 1;
+		return y;
+	)
 );
 
 -- Função utilizada para verificar se uma peça pode ser movida uma casa para baixo

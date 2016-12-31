@@ -37,7 +37,6 @@ public class TetrisPanel extends JPanel implements KeyListener, ComponentListene
 	private static final int TOP_MARGIN = 50;
 	private static final int LEFT_MARGIN = 30;
 	private static final int WIDTH = GameGrid.WIDTH.intValue();
-	private static final int HEIGHT = GameGrid.HEIGHT.intValue();
 	private static final int VISIBLE_HEIGHT = GameGrid.VISIBLE_HEIGHT.intValue();
 	
 	private static int PANEL_WIDTH_SQUARES = WIDTH + 4;
@@ -76,11 +75,12 @@ public class TetrisPanel extends JPanel implements KeyListener, ComponentListene
 		gameKeepingThread.start();
 	}
 	
-	private void drawSquare(Graphics g, int x, int y, String colorName) {
+	private void drawSquare(Graphics g, int x, int y, String colorName, boolean faint) {
 		Color color = colorMap.get(colorName);
 		if (color != null)
 		{
 			if (y >= VISIBLE_HEIGHT) return;
+			if (faint) color = new Color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha() / 4);
 			g.setColor(color);
 			g.fillRect(LEFT_MARGIN + SQUARE_SIZE*x, 
 					   TOP_MARGIN + SQUARE_SIZE*(VISIBLE_HEIGHT - 1 - y), 
@@ -113,25 +113,34 @@ public class TetrisPanel extends JPanel implements KeyListener, ComponentListene
 		{
 			VDMSeq line = ((VDMSeq)grid.get(y));
 			for (int x = 0; x < width; x++) {
-				drawSquare(g, x, y, line.get(x).toString());
+				drawSquare(g, x, y, line.get(x).toString(), false);
+			}
+		}
+	}
+	
+	private void drawTetramino(Graphics g, int tetraminoY, boolean faint) {
+		VDMSeq matrix = tetris.tetramino.getCurrentMatrix();
+		int height = matrix.size();
+		int offsetX = tetris.tetramino.x.intValue() - 1;
+		int offsetY = tetraminoY - 1;
+	
+		for (int y = 0; y < height; y++) {
+			VDMSeq line = (VDMSeq)matrix.get(y);
+			int width = line.size();
+			for (int x = 0; x < width; x++) {
+				drawSquare(g, offsetX + x, offsetY - y, line.get(x).toString(), faint);
 			}
 		}
 	}
 	
 	private void drawTetramino(Graphics g) {
 		if (tetris.tetramino == null) return;
-		VDMSeq matrix = tetris.tetramino.getCurrentMatrix();
-		int height = matrix.size();
-		int offsetX = tetris.tetramino.x.intValue() - 1;
-		int offsetY = tetris.tetramino.y.intValue() - 1;
+		drawTetramino(g, tetris.tetramino.y.intValue(), false);
+	}
 	
-		for (int y = 0; y < height; y++) {
-			VDMSeq line = (VDMSeq)matrix.get(y);
-			int width = line.size();
-			for (int x = 0; x < width; x++) {
-				drawSquare(g, offsetX + x, offsetY - y, line.get(x).toString());
-			}
-		}
+	private void drawGhostPiece(Graphics g) {
+		if (tetris.tetramino == null) return;
+		drawTetramino(g, tetris.getGhostPieceHeight().intValue(), true);
 	}
 	
 	private void drawNextTetramino(Graphics g) {
@@ -193,6 +202,7 @@ public class TetrisPanel extends JPanel implements KeyListener, ComponentListene
 		}
 		
 		drawNextTetramino(g);
+		drawGhostPiece(g);
 		drawTetramino(g);
 	}
 	
