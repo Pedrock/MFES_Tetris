@@ -11,4 +11,8 @@ X or Up arrow - Rotate right
 
 Space - Hard drop
 
-Z - rotate left
+Z - Rotate left
+
+P - Pause
+
+R - Restart
