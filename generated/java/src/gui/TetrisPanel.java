@@ -2,12 +2,16 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.HashMap;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.overture.codegen.runtime.VDMSeq;
 
@@ -16,7 +20,7 @@ import vdmtetris.Tetris;
 import vdmtetris.quotes.GameOverQuote;
 
 @SuppressWarnings("serial")
-public class TetrisPanel extends JPanel implements KeyListener {
+public class TetrisPanel extends JPanel implements KeyListener, ComponentListener {
 	
 	private static HashMap<String, Color> colorMap = new HashMap<String, Color>();
 	static {
@@ -28,43 +32,58 @@ public class TetrisPanel extends JPanel implements KeyListener {
 		colorMap.put("<Red>", Color.RED);
 		colorMap.put("<Yellow>", Color.YELLOW);
 	}
-	private static final int SQUARE_SIZE = 30;
+	private static final int DEFAULT_SQUARE_SIZE = 30;
+	private int SQUARE_SIZE = 30;
 	private static final int TOP_MARGIN = 50;
 	private static final int LEFT_MARGIN = 30;
 	private static final int WIDTH = GameGrid.WIDTH.intValue();
 	private static final int HEIGHT = GameGrid.HEIGHT.intValue();
+	private static final int VISIBLE_HEIGHT = GameGrid.VISIBLE_HEIGHT.intValue();
+	
+	private static int PANEL_WIDTH_SQUARES = WIDTH + 4;
+	private static int PANEL_HEIGHT_SQUARES = VISIBLE_HEIGHT + 1;
 	
 	private static Tetris tetris;
 	
 	private boolean pressingDown = false;
 	
+	Thread gameKeepingThread = new Thread() {
+		@Override public void run() {
+			while (true) {
+				int delay = tetris.getTickDelay().intValue();
+				if (pressingDown) delay /= 6;
+				try {
+					Thread.sleep(delay);
+					if (SwingUtilities.getRoot(TetrisPanel.this).hasFocus()) {
+						tetris.tick();
+						repaint();
+					}
+				}
+				catch (InterruptedException ex) {
+					repaint();
+				}
+			}
+		}
+	};
+	
 	public TetrisPanel() {
+		this.addComponentListener(this);
+		
 		tetris = new Tetris();
 		tetris.begin();
 		repaint();
 		
-		new Thread() {
-			@Override public void run() {
-				while (true) {
-					try {
-						int delay = tetris.getTickDelay().intValue();
-						if (pressingDown) delay /= 6;
-						Thread.sleep(delay);
-						tetris.tick();
-						repaint();
-					} catch ( InterruptedException e ) {}
-				}
-			}
-		}.start();
+		gameKeepingThread.start();
 	}
 	
 	private void drawSquare(Graphics g, int x, int y, String colorName) {
 		Color color = colorMap.get(colorName);
 		if (color != null)
 		{
+			if (y >= VISIBLE_HEIGHT) return;
 			g.setColor(color);
 			g.fillRect(LEFT_MARGIN + SQUARE_SIZE*x, 
-					   TOP_MARGIN + SQUARE_SIZE*(HEIGHT - 1 - y), 
+					   TOP_MARGIN + SQUARE_SIZE*(VISIBLE_HEIGHT - 1 - y), 
 					   (SQUARE_SIZE-1), 
 					   (SQUARE_SIZE-1));
 		}
@@ -73,12 +92,12 @@ public class TetrisPanel extends JPanel implements KeyListener {
 	private void drawGridLines(Graphics g) {
 		g.setColor(Color.DARK_GRAY);
 		int maxX = LEFT_MARGIN + WIDTH*SQUARE_SIZE - 1;
-		for (int y = 0; y <= HEIGHT; y++)
+		for (int y = 0; y <= VISIBLE_HEIGHT; y++)
 		{
 			int lineY = TOP_MARGIN + SQUARE_SIZE*y - 1;
 			g.drawLine(LEFT_MARGIN, lineY, maxX, lineY);
 		}
-		int maxY = TOP_MARGIN + HEIGHT*SQUARE_SIZE - 1;
+		int maxY = TOP_MARGIN + VISIBLE_HEIGHT*SQUARE_SIZE - 1;
 		for (int x = 0; x <= WIDTH; x++) {
 			int lineX = LEFT_MARGIN + SQUARE_SIZE*x - 1;
 			g.drawLine(lineX, TOP_MARGIN, lineX, maxY);
@@ -198,15 +217,36 @@ public class TetrisPanel extends JPanel implements KeyListener {
 			case KeyEvent.VK_DOWN:
 				pressingDown = true;
 				return false;
+			case KeyEvent.VK_R:
+				showRestartDialog();
+				return false;
+			case KeyEvent.VK_P:
+				showPausedDialog();
+				return false;
 			default:
 				return false;
 		}
 	}
 	
+	private void showRestartDialog() {
+		int dialogResult = JOptionPane.showConfirmDialog(this, 
+				"Do you want to restart?", "Restart?", JOptionPane.YES_NO_OPTION);
+		if(dialogResult == JOptionPane.YES_OPTION){
+			tetris.begin();
+			gameKeepingThread.interrupt();
+		}
+	}
+	
+	private void showPausedDialog() {
+		JOptionPane.showConfirmDialog(this, "Paused", "Paused", JOptionPane.PLAIN_MESSAGE);
+		gameKeepingThread.interrupt();
+	}
+	
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Tetris");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(2*LEFT_MARGIN+(WIDTH+4)*SQUARE_SIZE, 2*TOP_MARGIN+SQUARE_SIZE*(HEIGHT+1));
+		frame.setSize(2*LEFT_MARGIN+PANEL_WIDTH_SQUARES*DEFAULT_SQUARE_SIZE, 
+					  2*TOP_MARGIN+DEFAULT_SQUARE_SIZE*PANEL_HEIGHT_SQUARES);
 		final TetrisPanel panel = new TetrisPanel();
 		frame.add(panel);
 		frame.addKeyListener(panel);
@@ -228,4 +268,22 @@ public class TetrisPanel extends JPanel implements KeyListener {
 				pressingDown = false;
 		}
 	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {}
+
+	@Override
+	public void componentResized(ComponentEvent e) {
+		SQUARE_SIZE = Math.min(
+				(this.getWidth() - LEFT_MARGIN) / PANEL_WIDTH_SQUARES, 
+				(this.getHeight() - TOP_MARGIN) / PANEL_HEIGHT_SQUARES);
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {}
+	
+	
 }
