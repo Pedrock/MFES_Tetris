@@ -79,7 +79,7 @@ tick() == (
 	if not tetraminoHasCollisionInCoords(tetramino.x, tetramino.y - 1) then
 		tetramino.y := tetramino.y - 1
 	else
-		addTetraminoToGrid();
+		onCollision();
 );
 
 -- Função para obter o delay entre ticks.
@@ -88,9 +88,10 @@ getTickDelay() == (
 	if (level <= 8) then return floor (-83.5*level + 800.67)
 	elseif (level <= 29) then return floor (-3.5325*level + 115.69)
 	else return 13;
-);
+)
+post RESULT >= 13;
 
--- Função chamada pela GUI para mover a peça atual para a direita
+-- Função chamada para mover a peça atual para a direita
 public moveRight : () ==> ()
 moveRight() == (
 	if (gameState <> <Game>) then return;
@@ -98,7 +99,7 @@ moveRight() == (
 		tetramino.x := tetramino.x + 1;
 );
 
--- Função chamada pela GUI para mover a peça atual para a esquerda
+-- Função chamada para mover a peça atual para a esquerda
 public moveLeft : () ==> ()
 moveLeft() == (
 	if (gameState <> <Game>) then return;
@@ -106,28 +107,28 @@ moveLeft() == (
 		tetramino.x := tetramino.x - 1;
 );
 
--- Função chamada pela GUI para rodar a peça atual para a direita
+-- Função chamada para rodar a peça atual para a direita
 public rotateRight : () ==> ()
 rotateRight() == (
 	if (gameState <> <Game>) then return;
 	tryRotation(tetramino.getRightRotation())
 );
 
--- Função chamada pela GUI para rodar a peça atual para a esquerda
+-- Função chamada para rodar a peça atual para a esquerda
 public rotateLeft : () ==> ()
 rotateLeft() == (
 	if (gameState <> <Game>) then return;
 	tryRotation(tetramino.getLeftRotation())
 );
 
--- Função chamada pela GUI para fazer um hard drop
+-- Função chamada para fazer um hard drop
 public hardDrop : () ==> ()
 hardDrop() == (
 	if (gameState <> <Game>) then return;
 	while canMoveDown() do (
 		tetramino.y := tetramino.y - 1;
 	);
-	addTetraminoToGrid()
+	onCollision()
 );
 
 -- Devolve a altura a que deve ficar a ghost piece
@@ -142,17 +143,25 @@ getGhostPieceHeight() == (
 			y := y - 1;
 		return y;
 	)
+)
+post let matrix = tetramino.rotationsList(tetramino.rotation) in (
+	hasCollision(matrix, gameGrid.grid, tetramino.x, RESULT - 1)
+	and forall y in set inds gameGrid.grid & (
+		(y >= RESULT and y <= tetramino.y) => not hasCollision(matrix, gameGrid.grid, tetramino.x, y)
+	)
 );
 
 -- Função utilizada para verificar se uma peça pode ser movida uma casa para baixo
 private canMoveDown : () ==> bool
 canMoveDown() == (
 	return not tetraminoHasCollisionInCoords(tetramino.x, tetramino.y - 1)
-);
+)
+post RESULT = not hasCollision(tetramino.rotationsList(tetramino.rotation), gameGrid.grid, tetramino.x, tetramino.y - 1);
 
--- Função para adicionar o tetramino atual à matriz de peças fixas
-private addTetraminoToGrid : () ==> ()
-addTetraminoToGrid() == (
+-- Função chamada aquando da colisão de um tetraminó.
+-- Adiciona o mesmo à grelha, elimina linhas completas e verifica se o jogo termina.
+private onCollision : () ==> ()
+onCollision() == (
 	gameGrid.addTetramino(tetramino);
 	removeCompleteLines();
 	let line = gameGrid.grid(GameGrid`VISIBLE_HEIGHT) in (
@@ -189,26 +198,42 @@ removeCompleteLines() == (
 			level := floor (numberOfLines / LINES_PER_LEVEL)
 		);
 	)
+)
+post not exists y in set inds gameGrid.grid & (
+	forall x in set inds gameGrid.grid(y) & (
+		gameGrid.grid(y)(x) <> <Blank>
+	)
 );
 
 -- Vê se é possível fazer uma rotação. Se for possível, executa a mesma.
 -- Se não for possível tenta a mesma movendo a peça uma casa para a direita ou em último caso, para a esquerda.
 -- Processo descrito em: http://tetris.wikia.com/wiki/Wall_kick
 private tryRotation : Tetramino`RotationResult ==> ()
-tryRotation(result) ==  (
-	if not hasCollision(result.matrix, gameGrid.grid, tetramino.x, tetramino.y) then
-			tetramino.rotation := result.rotation
-		else if not hasCollision(result.matrix, gameGrid.grid, tetramino.x + 1, tetramino.y) then
+tryRotation(rotation) ==  (
+	if not hasCollision(rotation.matrix, gameGrid.grid, tetramino.x, tetramino.y) then
+			tetramino.rotation := rotation.rotation
+		else if not hasCollision(rotation.matrix, gameGrid.grid, tetramino.x + 1, tetramino.y) then
 		atomic ( -- Right wall kick
-			tetramino.rotation := result.rotation;
+			tetramino.rotation := rotation.rotation;
 			tetramino.x := tetramino.x + 1
 		)
-		else if not hasCollision(result.matrix, gameGrid.grid, tetramino.x - 1, tetramino.y) then
+		else if not hasCollision(rotation.matrix, gameGrid.grid, tetramino.x - 1, tetramino.y) then
 		atomic ( -- Left wall kick
-			tetramino.rotation := result.rotation;
+			tetramino.rotation := rotation.rotation;
 			tetramino.x := tetramino.x - 1
 		)
-);
+)
+pre 
+	rotation.matrix in set elems tetramino.rotationsList
+	and rotation.rotation >= 1 
+	and rotation.rotation <= len tetramino.rotationsList
+post 
+	(not hasCollision(rotation.matrix, gameGrid.grid, (tetramino~).x, tetramino.y) and tetramino.rotation = rotation.rotation)
+	or (not hasCollision(rotation.matrix, gameGrid.grid, (tetramino~).x + 1, tetramino.y) 
+			and tetramino.rotation = rotation.rotation and tetramino.x = (tetramino~).x + 1)
+	or (not hasCollision(rotation.matrix, gameGrid.grid, (tetramino~).x - 1, tetramino.y) 
+			and tetramino.rotation = rotation.rotation and tetramino.x = (tetramino~).x - 1)
+	or tetramino.rotation = (tetramino~).rotation;
 
 -- Verifica se o tetraminó em jogo tem colisão nas coordenadas (x, y)
 public tetraminoHasCollisionInCoords : int*int ==> bool
@@ -244,7 +269,8 @@ generateTetraminosBag() == (
   	bag(j) := tmp;
 	);
 	return bag;
-);
+)
+post elems RESULT = {1, ..., Tetramino`getNumber()};
 
 -- Obtém um novo tetraminó da lista
 private popTetraminoFromBag: () ==> Tetramino
@@ -255,7 +281,11 @@ popTetraminoFromBag() == (
 		tetraminoesBag := tl tetraminoesBag;
 		return t;
 	);
-);
+)
+post (len tetraminoesBag~ = 0 and len tetraminoesBag = Tetramino`getNumber() - 1)
+		  or tetraminoesBag = tl tetraminoesBag~;
+
+
 
 functions
 

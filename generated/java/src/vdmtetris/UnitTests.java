@@ -187,6 +187,23 @@ public class UnitTests extends TestCase {
     assertTrue(Utils.equals(tetris.score, 40L));
   }
 
+  private void testGameOver() {
+
+    tetris.begin();
+    long toVar_6 =
+        Math.round(
+            Utils.floor(Utils.divide((1.0 * (GameGrid.VISIBLE_HEIGHT.longValue() + 1L)), 2L)));
+
+    for (Long i = 1L; i <= toVar_6; i++) {
+      if (i.longValue() > 0L) {
+        tetris.tetramino = new Tetramino('O');
+        assertTrue(Utils.equals(tetris.gameState, vdmtetris.quotes.GameQuote.getInstance()));
+        tetris.hardDrop();
+      }
+    }
+    assertTrue(Utils.equals(tetris.gameState, vdmtetris.quotes.GameOverQuote.getInstance()));
+  }
+
   public UnitTests() {}
 
   public String toString() {

@@ -20,7 +20,7 @@ import vdmtetris.Tetris;
 import vdmtetris.quotes.GameOverQuote;
 
 @SuppressWarnings("serial")
-public class TetrisPanel extends JPanel implements KeyListener, ComponentListener {
+public class TetrisGUI extends JPanel implements KeyListener, ComponentListener {
 	
 	private static HashMap<String, Color> colorMap = new HashMap<String, Color>();
 	static {
@@ -53,7 +53,7 @@ public class TetrisPanel extends JPanel implements KeyListener, ComponentListene
 				if (pressingDown) delay /= 6;
 				try {
 					Thread.sleep(delay);
-					if (SwingUtilities.getRoot(TetrisPanel.this).hasFocus()) {
+					if (SwingUtilities.getRoot(TetrisGUI.this).hasFocus()) {
 						tetris.tick();
 						repaint();
 					}
@@ -65,7 +65,7 @@ public class TetrisPanel extends JPanel implements KeyListener, ComponentListene
 		}
 	};
 	
-	public TetrisPanel() {
+	public TetrisGUI() {
 		this.addComponentListener(this);
 		
 		tetris = new Tetris();
@@ -261,7 +261,7 @@ public class TetrisPanel extends JPanel implements KeyListener, ComponentListene
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(2*LEFT_MARGIN+PANEL_WIDTH_SQUARES*DEFAULT_SQUARE_SIZE, 
 					  2*TOP_MARGIN+DEFAULT_SQUARE_SIZE*PANEL_HEIGHT_SQUARES);
-		final TetrisPanel panel = new TetrisPanel();
+		final TetrisGUI panel = new TetrisGUI();
 		frame.add(panel);
 		frame.addKeyListener(panel);
 		frame.setVisible(true);

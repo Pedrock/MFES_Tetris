@@ -131,4 +131,17 @@ testCompletedLine() == (
 	assertTrue(tetris.score = 40);
 );
 
+testGameOver: () ==> ()
+testGameOver() == (
+	tetris.begin();
+	for i = 1 to floor ((GameGrid`VISIBLE_HEIGHT + 1) / 2) do (
+		if i > 0 then ( -- Para remover warning.
+			tetris.tetramino := new Tetramino('O');
+			assertTrue(tetris.gameState = <Game>);
+			tetris.hardDrop();
+		)
+	);
+	assertTrue(tetris.gameState = <GameOver>);
+);
+
 end UnitTests

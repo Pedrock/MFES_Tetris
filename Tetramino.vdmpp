@@ -20,7 +20,8 @@ public RotationResult:: rotation : nat1
 
 values
 
-public TetraminosTypes : map char to nat1 = {
+-- Mapeamento de caráter que representa um tetraminó para o índice da lista
+private tetraminosTypes : map char to nat1 = {
 	'I' |-> 1,
 	'J' |-> 2,
 	'L' |-> 3,
@@ -203,18 +204,20 @@ inv rotation <= len rotationsList;
 
 operations
 
--- Tetraminó no estado inicial, com a rotação inicial (igual a 1)
+-- Construtor de Tetraminó através de índice da lista
 public Tetramino : nat1 ==> Tetramino
 Tetramino(number) == (
 rotationsList := tetraminoes(number);
 x := GameGrid`WIDTH / 2 - floor (len tetraminoes(number) / 4);
 return self
 )
-pre number <= len tetraminoes
+pre number in set inds tetraminoes
 post RESULT.rotationsList = tetraminoes(number) and RESULT.rotation = 1;
 
+-- Contrutor de Tetraminó através do caráter que o representa
 public Tetramino : char ==> Tetramino
-Tetramino(c) == Tetramino(TetraminosTypes(c));
+Tetramino(c) == Tetramino(tetraminosTypes(c))
+pre c in set dom tetraminosTypes;
 
 -- Devolve o índice de rotação e a matriz representativa do tetraminó aquando da rotação à direita
 public getRightRotation : () ==> RotationResult
@@ -237,14 +240,14 @@ post (rotation > 1 and RESULT = mk_RotationResult(rotation-1, rotationsList(rota
 		 or (rotation = 1 and RESULT = mk_RotationResult(len rotationsList, rotationsList(len rotationsList)));
 
 
--- Retorna a matriz do tetraminó
+-- Retorna a matriz do tetraminó para a rotação atual
 public getCurrentMatrix : () ==> TetraminoMatrix
 getCurrentMatrix() == return rotationsList(rotation)
 post RESULT = rotationsList(rotation);
 
 functions
 
--- Devolve o número de tetraminós
+-- Devolve o número de tetraminós possíveis
 public getNumber : () -> nat
 getNumber() == len tetraminoes;
 

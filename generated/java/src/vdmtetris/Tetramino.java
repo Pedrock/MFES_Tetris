@@ -5,7 +5,7 @@ import org.overture.codegen.runtime.*;
 
 @SuppressWarnings("all")
 public class Tetramino {
-  public static final VDMMap TetraminosTypes =
+  private static final VDMMap tetraminosTypes =
       MapUtil.map(
           new Maplet('I', 1L),
           new Maplet('J', 2L),
@@ -381,7 +381,7 @@ public class Tetramino {
 
   public void cg_init_Tetramino_2(final Character c) {
 
-    cg_init_Tetramino_1(((Number) Utils.get(TetraminosTypes, c)));
+    cg_init_Tetramino_1(((Number) Utils.get(tetraminosTypes, c)));
   }
 
   public void cg_init_Tetramino_1(final Number number) {
@@ -443,8 +443,8 @@ public class Tetramino {
   public String toString() {
 
     return "Tetramino{"
-        + "TetraminosTypes = "
-        + Utils.toString(TetraminosTypes)
+        + "tetraminosTypes = "
+        + Utils.toString(tetraminosTypes)
         + ", tetraminoes = "
         + Utils.toString(tetraminoes)
         + ", rotation := "
