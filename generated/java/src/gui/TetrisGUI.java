@@ -159,9 +159,8 @@ public class TetrisGUI extends JPanel implements KeyListener, ComponentListener 
 		int height = matrix.size();
 		
 		if (height < 4) {
-			offsetY += squareSize;
-			if (height < 3)
-				offsetX += squareSize;
+			offsetY += (4 - height)*squareSize/2;
+			offsetX += (4 - height)*squareSize/2;
 		}
 		
 		for (int y = 0; y < height; y++) {
@@ -252,7 +251,7 @@ public class TetrisGUI extends JPanel implements KeyListener, ComponentListener 
 	}
 	
 	private void showPausedDialog() {
-		JOptionPane.showConfirmDialog(this, "Paused", "Paused", JOptionPane.PLAIN_MESSAGE);
+		JOptionPane.showConfirmDialog(this, "Paused. Resume game?", "Paused", JOptionPane.DEFAULT_OPTION);
 		gameKeepingThread.interrupt();
 	}
 	
