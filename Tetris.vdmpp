@@ -36,7 +36,12 @@ public gameGrid : GameGrid := new GameGrid();
 
 -- Tetraminó em jogo
 public tetramino : [Tetramino] := nil;
+
+-- Próximo tetraminó
 public nextTetramino : [Tetramino] := nil;
+
+-- Lista de próximos tetraminós
+private tetraminoesBag : seq of nat1 := [];
 
 -- Pontuação atual
 public score : nat := 0;
@@ -59,8 +64,8 @@ operations
 public begin : () ==> ()
 begin() == (
 	gameGrid := new GameGrid();
-	tetramino := getRandomTetramino();
-	nextTetramino := getRandomTetramino();
+	tetramino := popTetraminoFromBag();
+	nextTetramino := popTetraminoFromBag();
 	score := 0;
 	level := 0;
 	numberOfLines := 0;
@@ -150,7 +155,7 @@ private addTetraminoToGrid : () ==> ()
 addTetraminoToGrid() == (
 	gameGrid.addTetramino(tetramino);
 	removeCompleteLines();
-	let line = gameGrid.grid(GameGrid`HEIGHT) in (
+	let line = gameGrid.grid(GameGrid`VISIBLE_HEIGHT) in (
 		if exists x in set inds line & line(x) <> <Blank> then (
 			gameState := <GameOver>;
 			tetramino := nil;
@@ -158,7 +163,7 @@ addTetraminoToGrid() == (
 	);
 	if gameState = <Game> then (
 		tetramino := nextTetramino;
-		nextTetramino := getRandomTetramino();
+		nextTetramino := popTetraminoFromBag();
 	);
 );
 
@@ -205,10 +210,6 @@ tryRotation(result) ==  (
 		)
 );
 
---Escolha aleatória do tetraminó em jogo
-private getRandomTetramino : () ==> Tetramino
-getRandomTetramino() == return new Tetramino(MATH`rand(Tetramino`getNumber()-1)+1);
-	
 -- Verifica se o tetraminó em jogo tem colisão nas coordenadas (x, y)
 public tetraminoHasCollisionInCoords : int*int ==> bool
 tetraminoHasCollisionInCoords(x, y) == (
@@ -231,6 +232,30 @@ tetraminoHasCollisionInCoords(x, y) == (
 post 
 RESULT = hasCollision(tetramino.rotationsList(tetramino.rotation), gameGrid.grid, x, y);
 
+-- Cria e baralha uma lista de identificadores de tetraminós.
+-- http://tetris.wikia.com/wiki/Random_Generator
+private generateTetraminosBag : () ==> seq of nat1
+generateTetraminosBag() == (
+	dcl bag : seq of nat1 := [x | x in set {1, ..., Tetramino`getNumber()}];
+	for i = 1 to Tetramino`getNumber() - 1 do (
+		dcl j : nat1 := MATH`rand(Tetramino`getNumber()-1)+1;
+		dcl tmp : nat1 := bag(i);
+  	bag(i) := bag(j);
+  	bag(j) := tmp;
+	);
+	return bag;
+);
+
+-- Obtém um novo tetraminó da lista
+private popTetraminoFromBag: () ==> Tetramino
+popTetraminoFromBag() == (
+	if len tetraminoesBag = 0 then 
+		tetraminoesBag := generateTetraminosBag();
+	let t : Tetramino = new Tetramino(hd tetraminoesBag) in (
+		tetraminoesBag := tl tetraminoesBag;
+		return t;
+	);
+);
 
 functions
 

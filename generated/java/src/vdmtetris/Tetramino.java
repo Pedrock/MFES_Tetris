@@ -5,6 +5,15 @@ import org.overture.codegen.runtime.*;
 
 @SuppressWarnings("all")
 public class Tetramino {
+  public static final VDMMap TetraminosTypes =
+      MapUtil.map(
+          new Maplet('I', 1L),
+          new Maplet('J', 2L),
+          new Maplet('L', 3L),
+          new Maplet('O', 4L),
+          new Maplet('S', 5L),
+          new Maplet('T', 6L),
+          new Maplet('Z', 7L));
   private static final VDMSeq tetraminoes =
       SeqUtil.seq(
           SeqUtil.seq(
@@ -370,6 +379,11 @@ public class Tetramino {
   public Number x = Utils.divide((1.0 * GameGrid.WIDTH.longValue()), 2L);
   public Number y = GameGrid.HEIGHT;
 
+  public void cg_init_Tetramino_2(final Character c) {
+
+    cg_init_Tetramino_1(((Number) Utils.get(TetraminosTypes, c)));
+  }
+
   public void cg_init_Tetramino_1(final Number number) {
 
     rotationsList = Utils.copy(((VDMSeq) Utils.get(tetraminoes, number)));
@@ -384,6 +398,11 @@ public class Tetramino {
   public Tetramino(final Number number) {
 
     cg_init_Tetramino_1(number);
+  }
+
+  public Tetramino(final Character c) {
+
+    cg_init_Tetramino_2(c);
   }
 
   public RotationResult getRightRotation() {
@@ -424,7 +443,9 @@ public class Tetramino {
   public String toString() {
 
     return "Tetramino{"
-        + "tetraminoes = "
+        + "TetraminosTypes = "
+        + Utils.toString(TetraminosTypes)
+        + ", tetraminoes = "
         + Utils.toString(tetraminoes)
         + ", rotation := "
         + Utils.toString(rotation)

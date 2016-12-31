@@ -18,7 +18,7 @@ public class UnitTests extends TestCase {
   public void testNoCollision2() {
 
     tetris.begin();
-    tetris.tetramino = new Tetramino(1L);
+    tetris.tetramino = new Tetramino('I');
     tetris.tetramino.rotation = 2L;
     assertFalse(tetris.tetraminoHasCollisionInCoords(8L, 15L));
   }
@@ -26,7 +26,7 @@ public class UnitTests extends TestCase {
   public void testWallCollision() {
 
     tetris.begin();
-    tetris.tetramino = new Tetramino(1L);
+    tetris.tetramino = new Tetramino('I');
     assertTrue(tetris.tetraminoHasCollisionInCoords(8L, 15L));
     tetris.tetramino.rotation = 2L;
     assertFalse(tetris.tetraminoHasCollisionInCoords(8L, 15L));
@@ -35,7 +35,7 @@ public class UnitTests extends TestCase {
   public void testRightWallKick() {
 
     tetris.begin();
-    tetris.tetramino = new Tetramino(1L);
+    tetris.tetramino = new Tetramino('I');
     assertTrue(Utils.equals(tetris.tetramino.x, 4L));
     tetris.moveRight();
     tetris.moveRight();
@@ -57,7 +57,7 @@ public class UnitTests extends TestCase {
   public void testLeftWallKick() {
 
     tetris.begin();
-    tetris.tetramino = new Tetramino(1L);
+    tetris.tetramino = new Tetramino('I');
     assertTrue(Utils.equals(tetris.tetramino.x, 4L));
     tetris.moveLeft();
     tetris.moveLeft();
@@ -84,13 +84,13 @@ public class UnitTests extends TestCase {
   public void testAddTetramino() {
 
     tetris.begin();
-    tetris.tetramino = new Tetramino(1L);
+    tetris.tetramino = new Tetramino('I');
     assertTrue(Utils.equals(tetris.tetramino.y, 22L));
     tetris.tick();
     assertTrue(Utils.equals(tetris.tetramino.y, 21L));
-    long toVar_2 = 19L;
+    long toVar_3 = 19L;
 
-    for (Long i = 1L; i <= toVar_2; i++) {
+    for (Long i = 1L; i <= toVar_3; i++) {
       if (i.longValue() > 0L) {
         tetris.tick();
       }
@@ -107,11 +107,11 @@ public class UnitTests extends TestCase {
   public void testAdd2Tetraminos() {
 
     testAddTetramino();
-    tetris.tetramino = new Tetramino(1L);
+    tetris.tetramino = new Tetramino('I');
     assertTrue(Utils.equals(tetris.tetramino.y, 22L));
-    long toVar_3 = 19L;
+    long toVar_4 = 19L;
 
-    for (Long i = 1L; i <= toVar_3; i++) {
+    for (Long i = 1L; i <= toVar_4; i++) {
       if (i.longValue() > 0L) {
         tetris.tick();
       }
@@ -128,7 +128,7 @@ public class UnitTests extends TestCase {
   public void testHardDrop() {
 
     tetris.begin();
-    tetris.tetramino = new Tetramino(2L);
+    tetris.tetramino = new Tetramino('J');
     assertTrue(Utils.equals(tetris.tetramino.y, 22L));
     tetris.hardDrop();
     assertTrue(
@@ -141,12 +141,12 @@ public class UnitTests extends TestCase {
   public void testCompletedLine() {
 
     tetris.begin();
-    tetris.tetramino = new Tetramino(1L);
+    tetris.tetramino = new Tetramino('I');
     tetris.moveLeft();
     tetris.moveLeft();
     tetris.moveLeft();
     tetris.hardDrop();
-    tetris.tetramino = new Tetramino(1L);
+    tetris.tetramino = new Tetramino('I');
     tetris.moveRight();
     tetris.hardDrop();
     assertTrue(
@@ -157,15 +157,15 @@ public class UnitTests extends TestCase {
         Utils.equals(
             Utils.get(((VDMSeq) Utils.get(tetris.gameGrid.grid, 1L)), 8L),
             vdmtetris.quotes.CyanQuote.getInstance()));
-    tetris.tetramino = new Tetramino(4L);
+    tetris.tetramino = new Tetramino('O');
     tetris.moveRight();
     tetris.moveRight();
     tetris.moveRight();
     tetris.moveRight();
     tetris.hardDrop();
-    long toVar_4 = GameGrid.HEIGHT.longValue();
+    long toVar_5 = GameGrid.HEIGHT.longValue();
 
-    for (Long i = 1L; i <= toVar_4; i++) {
+    for (Long i = 1L; i <= toVar_5; i++) {
       assertTrue(
           Utils.equals(
               Utils.get(((VDMSeq) Utils.get(tetris.gameGrid.grid, i)), 1L),

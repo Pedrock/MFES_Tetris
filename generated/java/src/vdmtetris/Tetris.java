@@ -12,6 +12,7 @@ public class Tetris {
   public GameGrid gameGrid = new GameGrid();
   public Tetramino tetramino = null;
   public Tetramino nextTetramino = null;
+  private VDMSeq tetraminoesBag = SeqUtil.seq();
   public Number score = 0L;
   public Number level = 0L;
   public Number numberOfLines = 0L;
@@ -20,8 +21,8 @@ public class Tetris {
   public void begin() {
 
     gameGrid = new GameGrid();
-    tetramino = getRandomTetramino();
-    nextTetramino = getRandomTetramino();
+    tetramino = popTetraminoFromBag();
+    nextTetramino = popTetraminoFromBag();
     score = 0L;
     level = 0L;
     numberOfLines = 0L;
@@ -148,7 +149,7 @@ public class Tetris {
     gameGrid.addTetramino(tetramino);
     removeCompleteLines();
     {
-      final VDMSeq line = Utils.copy(((VDMSeq) Utils.get(gameGrid.grid, GameGrid.HEIGHT)));
+      final VDMSeq line = Utils.copy(((VDMSeq) Utils.get(gameGrid.grid, GameGrid.VISIBLE_HEIGHT)));
       Boolean existsExpResult_1 = false;
       VDMSet set_5 = SeqUtil.inds(line);
       for (Iterator iterator_5 = set_5.iterator(); iterator_5.hasNext() && !(existsExpResult_1); ) {
@@ -164,7 +165,7 @@ public class Tetris {
 
     if (Utils.equals(gameState, vdmtetris.quotes.GameQuote.getInstance())) {
       tetramino = nextTetramino;
-      nextTetramino = getRandomTetramino();
+      nextTetramino = popTetraminoFromBag();
     }
   }
 
@@ -249,23 +250,18 @@ public class Tetris {
     }
   }
 
-  private Tetramino getRandomTetramino() {
-
-    return new Tetramino(MATH.rand(Tetramino.getNumber().longValue() - 1L).longValue() + 1L);
-  }
-
   public Boolean tetraminoHasCollisionInCoords(final Number x, final Number y) {
 
-    for (Iterator iterator_11 = SeqUtil.inds(tetramino.getCurrentMatrix()).iterator();
-        iterator_11.hasNext();
+    for (Iterator iterator_12 = SeqUtil.inds(tetramino.getCurrentMatrix()).iterator();
+        iterator_12.hasNext();
         ) {
-      Number tetraminoY = (Number) iterator_11.next();
+      Number tetraminoY = (Number) iterator_12.next();
       {
         final VDMSeq line =
             Utils.copy(((VDMSeq) Utils.get(tetramino.getCurrentMatrix(), tetraminoY)));
         {
-          for (Iterator iterator_12 = SeqUtil.inds(line).iterator(); iterator_12.hasNext(); ) {
-            Number tetraminoX = (Number) iterator_12.next();
+          for (Iterator iterator_13 = SeqUtil.inds(line).iterator(); iterator_13.hasNext(); ) {
+            Number tetraminoX = (Number) iterator_13.next();
             {
               final Number cellX = x.longValue() - 1L + tetraminoX.longValue();
               final Number cellY = y.longValue() + 1L - tetraminoY.longValue();
@@ -320,19 +316,54 @@ public class Tetris {
     return false;
   }
 
+  private VDMSeq generateTetraminosBag() {
+
+    VDMSeq seqCompResult_3 = SeqUtil.seq();
+    VDMSet set_7 = SetUtil.range(1L, Tetramino.getNumber());
+    for (Iterator iterator_7 = set_7.iterator(); iterator_7.hasNext(); ) {
+      Number x = ((Number) iterator_7.next());
+      seqCompResult_3.add(x);
+    }
+    VDMSeq bag = Utils.copy(seqCompResult_3);
+    long toVar_2 = Tetramino.getNumber().longValue() - 1L;
+
+    for (Long i = 1L; i <= toVar_2; i++) {
+      Number j = MATH.rand(Tetramino.getNumber().longValue() - 1L).longValue() + 1L;
+      Number tmp = ((Number) Utils.get(bag, i));
+      Utils.mapSeqUpdate(bag, i, ((Number) Utils.get(bag, j)));
+      Utils.mapSeqUpdate(bag, j, tmp);
+    }
+    return Utils.copy(bag);
+  }
+
+  private Tetramino popTetraminoFromBag() {
+
+    if (Utils.equals(tetraminoesBag.size(), 0L)) {
+      tetraminoesBag = generateTetraminosBag();
+    }
+
+    {
+      final Tetramino t = new Tetramino(((Number) tetraminoesBag.get(0)));
+      {
+        tetraminoesBag = SeqUtil.tail(Utils.copy(tetraminoesBag));
+        return t;
+      }
+    }
+  }
+
   public Tetris() {}
 
   private static Boolean hasCollision(
       final VDMSeq tetraminoMatrix, final VDMSeq gameGrid_1, final Number x, final Number y) {
 
     Boolean existsExpResult_2 = false;
-    VDMSet set_7 = SeqUtil.inds(tetraminoMatrix);
-    for (Iterator iterator_7 = set_7.iterator(); iterator_7.hasNext() && !(existsExpResult_2); ) {
-      Number tetraminoY = ((Number) iterator_7.next());
+    VDMSet set_8 = SeqUtil.inds(tetraminoMatrix);
+    for (Iterator iterator_8 = set_8.iterator(); iterator_8.hasNext() && !(existsExpResult_2); ) {
+      Number tetraminoY = ((Number) iterator_8.next());
       Boolean existsExpResult_3 = false;
-      VDMSet set_8 = SeqUtil.inds(((VDMSeq) Utils.get(tetraminoMatrix, tetraminoY)));
-      for (Iterator iterator_8 = set_8.iterator(); iterator_8.hasNext() && !(existsExpResult_3); ) {
-        Number tetraminoX = ((Number) iterator_8.next());
+      VDMSet set_9 = SeqUtil.inds(((VDMSeq) Utils.get(tetraminoMatrix, tetraminoY)));
+      for (Iterator iterator_9 = set_9.iterator(); iterator_9.hasNext() && !(existsExpResult_3); ) {
+        Number tetraminoX = ((Number) iterator_9.next());
         Boolean andResult_10 = false;
 
         if (!(Utils.equals(
@@ -407,6 +438,8 @@ public class Tetris {
         + Utils.toString(tetramino)
         + ", nextTetramino := "
         + Utils.toString(nextTetramino)
+        + ", tetraminoesBag := "
+        + Utils.toString(tetraminoesBag)
         + ", score := "
         + Utils.toString(score)
         + ", level := "

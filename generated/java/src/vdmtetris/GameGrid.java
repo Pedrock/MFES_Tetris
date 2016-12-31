@@ -17,16 +17,16 @@ public class GameGrid {
 
   public void addTetramino(final Tetramino tetramino) {
 
-    for (Iterator iterator_9 = SeqUtil.inds(tetramino.getCurrentMatrix()).iterator();
-        iterator_9.hasNext();
+    for (Iterator iterator_10 = SeqUtil.inds(tetramino.getCurrentMatrix()).iterator();
+        iterator_10.hasNext();
         ) {
-      Number tetraminoY = (Number) iterator_9.next();
+      Number tetraminoY = (Number) iterator_10.next();
       {
         final VDMSeq line =
             Utils.copy(((VDMSeq) Utils.get(tetramino.getCurrentMatrix(), tetraminoY)));
         {
-          for (Iterator iterator_10 = SeqUtil.inds(line).iterator(); iterator_10.hasNext(); ) {
-            Number tetraminoX = (Number) iterator_10.next();
+          for (Iterator iterator_11 = SeqUtil.inds(line).iterator(); iterator_11.hasNext(); ) {
+            Number tetraminoX = (Number) iterator_11.next();
             {
               final Number cellX = tetramino.x.longValue() - 1L + tetraminoX.longValue();
               final Number cellY = tetramino.y.longValue() + 1L - tetraminoY.longValue();

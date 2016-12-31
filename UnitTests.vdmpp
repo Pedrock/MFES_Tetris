@@ -14,7 +14,7 @@ testNoCollision() == (
 public testNoCollision2: () ==> ()
 testNoCollision2() == (
 	tetris.begin();
-	tetris.tetramino := new Tetramino(1); -- Tetraminó I
+	tetris.tetramino := new Tetramino('I'); -- Tetraminó I
 	tetris.tetramino.rotation := 2;
 	assertFalse(tetris.tetraminoHasCollisionInCoords(8,15));
 );
@@ -22,7 +22,7 @@ testNoCollision2() == (
 public testWallCollision: () ==> ()
 testWallCollision() == (
 	tetris.begin();
-	tetris.tetramino := new Tetramino(1); -- Tetraminó I
+	tetris.tetramino := new Tetramino('I'); -- Tetraminó I
 	assertTrue(tetris.tetraminoHasCollisionInCoords(8,15));
 	tetris.tetramino.rotation := 2;
 	assertFalse(tetris.tetraminoHasCollisionInCoords(8,15));
@@ -31,7 +31,7 @@ testWallCollision() == (
 public testRightWallKick: () ==> ()
 testRightWallKick() == (
 	tetris.begin();
-	tetris.tetramino := new Tetramino(1); -- Tetraminó I
+	tetris.tetramino := new Tetramino('I'); -- Tetraminó I
 	assertTrue(tetris.tetramino.x = 4);
 	tetris.moveRight(); tetris.moveRight(); tetris.moveRight();
 	assertTrue(tetris.tetramino.x = 7);
@@ -50,7 +50,7 @@ testRightWallKick() == (
 public testLeftWallKick: () ==> ()
 testLeftWallKick() == (
 	tetris.begin();
-	tetris.tetramino := new Tetramino(1); -- Tetraminó I
+	tetris.tetramino := new Tetramino('I'); -- Tetraminó I
 	assertTrue(tetris.tetramino.x = 4);
 	tetris.moveLeft(); tetris.moveLeft(); tetris.moveLeft();
 	assertTrue(tetris.tetramino.x = 1);
@@ -73,7 +73,7 @@ testLeftWallKick() == (
 public testAddTetramino: () ==> ()
 testAddTetramino() == (
 	tetris.begin();
-	tetris.tetramino := new Tetramino(1);
+	tetris.tetramino := new Tetramino('I');
 	assertTrue(tetris.tetramino.y = 22);
 	tetris.tick();
 	assertTrue(tetris.tetramino.y = 21);
@@ -87,7 +87,7 @@ testAddTetramino() == (
 public testAdd2Tetraminos: () ==> ()
 testAdd2Tetraminos() == (
 	testAddTetramino();
-	tetris.tetramino := new Tetramino(1);
+	tetris.tetramino := new Tetramino('I');
 	assertTrue(tetris.tetramino.y = 22);
 	for i = 1 to 19 do if (i > 0) then tetris.tick();
 	assertTrue(tetris.tetramino.y = 3);
@@ -99,7 +99,7 @@ testAdd2Tetraminos() == (
 public testHardDrop: () ==> ()
 testHardDrop() == (
 	tetris.begin();
-	tetris.tetramino := new Tetramino(2); -- Tetramino J
+	tetris.tetramino := new Tetramino('J'); -- Tetramino J
 	assertTrue(tetris.tetramino.y = 22);
 	tetris.hardDrop();
 	assertTrue(tetris.gameGrid.grid(1)(5) = <Blue>);
@@ -109,15 +109,15 @@ testHardDrop() == (
 public testCompletedLine: () ==> ()
 testCompletedLine() == (
 	tetris.begin();
-	tetris.tetramino := new Tetramino(1);
+	tetris.tetramino := new Tetramino('I');
 	tetris.moveLeft(); tetris.moveLeft(); tetris.moveLeft(); 
 	tetris.hardDrop();
-	tetris.tetramino := new Tetramino(1);
+	tetris.tetramino := new Tetramino('I');
 	tetris.moveRight();
 	tetris.hardDrop();
 	assertTrue(tetris.gameGrid.grid(1)(1) = <Cyan>);
 	assertTrue(tetris.gameGrid.grid(1)(8) = <Cyan>);
-	tetris.tetramino := new Tetramino(4); -- Square
+	tetris.tetramino := new Tetramino('O'); -- Square
 	tetris.moveRight(); tetris.moveRight();
 	tetris.moveRight(); tetris.moveRight();
 	tetris.hardDrop();

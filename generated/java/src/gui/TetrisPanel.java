@@ -225,6 +225,10 @@ public class TetrisPanel extends JPanel implements KeyListener, ComponentListene
 				tetris.hardDrop();
 				return true;
 			case KeyEvent.VK_DOWN:
+				if (!pressingDown) {
+					gameKeepingThread.interrupt();
+					tetris.tick();
+				}
 				pressingDown = true;
 				return false;
 			case KeyEvent.VK_R:
@@ -276,6 +280,8 @@ public class TetrisPanel extends JPanel implements KeyListener, ComponentListene
 		switch (e.getKeyCode()) {
 			case KeyEvent.VK_DOWN:
 				pressingDown = false;
+				gameKeepingThread.interrupt();
+				break;
 		}
 	}
 

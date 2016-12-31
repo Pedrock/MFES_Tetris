@@ -20,6 +20,16 @@ public RotationResult:: rotation : nat1
 
 values
 
+public TetraminosTypes : map char to nat1 = {
+	'I' |-> 1,
+	'J' |-> 2,
+	'L' |-> 3,
+	'O' |-> 4,
+	'S' |-> 5,
+	'T' |-> 6,
+	'Z' |-> 7
+};
+
 -- Todas as diferentes representações (matrizes) de tetraminos no jogo, tendo em contas as suas rotações
 -- Utilizado o Super Rotation System (SRS): http://tetris.wikia.com/wiki/SRS
 private tetraminoes : seq of RotationsList = 
@@ -202,6 +212,9 @@ return self
 )
 pre number <= len tetraminoes
 post RESULT.rotationsList = tetraminoes(number) and RESULT.rotation = 1;
+
+public Tetramino : char ==> Tetramino
+Tetramino(c) == Tetramino(TetraminosTypes(c));
 
 -- Devolve o índice de rotação e a matriz representativa do tetraminó aquando da rotação à direita
 public getRightRotation : () ==> RotationResult

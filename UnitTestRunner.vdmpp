@@ -2,6 +2,6 @@ class UnitTestRunner
 
 operations
     public Execute: () ==> ()
-           Execute() == new TestRunner().run()
+           Execute() == new TestRunner().run();
 
 end UnitTestRunner
