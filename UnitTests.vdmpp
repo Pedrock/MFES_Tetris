@@ -77,7 +77,7 @@ testAddTetramino() == (
 	assertTrue(tetris.tetramino.y = 22);
 	tetris.tick();
 	assertTrue(tetris.tetramino.y = 21);
-	for i = 1 to 19 do if (i > 0) then tetris.tick();
+	for i = 1 to 19 do tetris.tick();
 	assertTrue(tetris.tetramino.y = 2);
 	tetris.tick(); -- Tetraminó é adicionado à grelha
 	assertTrue(tetris.gameGrid.grid(1)(5) = <Cyan>);
@@ -89,7 +89,7 @@ testAdd2Tetraminos() == (
 	testAddTetramino();
 	tetris.tetramino := new Tetramino('I');
 	assertTrue(tetris.tetramino.y = 22);
-	for i = 1 to 19 do if (i > 0) then tetris.tick();
+	for i = 1 to 19 do tetris.tick();
 	assertTrue(tetris.tetramino.y = 3);
 	tetris.tick();
 	assertTrue(tetris.gameGrid.grid(2)(5) = <Cyan>);
@@ -131,17 +131,48 @@ testCompletedLine() == (
 	assertTrue(tetris.score = 40);
 );
 
-testGameOver: () ==> ()
+public testGameOver: () ==> ()
 testGameOver() == (
 	tetris.begin();
 	for i = 1 to floor ((GameGrid`VISIBLE_HEIGHT + 1) / 2) do (
-		if i > 0 then ( -- Para remover warning.
 			tetris.tetramino := new Tetramino('O');
 			assertTrue(tetris.gameState = <Game>);
 			tetris.hardDrop();
-		)
 	);
 	assertTrue(tetris.gameState = <GameOver>);
+);
+
+public testRotations: () ==> ()
+testRotations() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino('Z');
+	assertTrue(tetris.tetramino.rotation = 1);
+	for i = 1 to 4 do tetris.rotateLeft();
+	assertTrue(tetris.tetramino.rotation = 1);
+	for i = 1 to 4 do tetris.rotateRight();
+	assertTrue(tetris.tetramino.rotation = 1);
+);
+
+public testGhostPiece: () ==> ()
+testGhostPiece() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino('I');
+	assertTrue(tetris.getGhostPieceHeight() = 2);
+	
+);
+
+public testTickDelays: () ==> ()
+testTickDelays() == (
+	dcl prevDelay : nat := 0;
+	dcl curDelay : nat := 0;
+	tetris.begin();
+	prevDelay := tetris.getTickDelay();
+	for level = 1 to 50 do (
+		tetris.level := level;
+		curDelay := tetris.getTickDelay();
+		assertTrue(curDelay <= prevDelay);
+		prevDelay := curDelay;
+	)
 );
 
 end UnitTests

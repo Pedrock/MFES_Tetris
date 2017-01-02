@@ -62,9 +62,7 @@ public class GameGrid {
     VDMSet set_3 = SetUtil.range(1L, length);
     for (Iterator iterator_3 = set_3.iterator(); iterator_3.hasNext(); ) {
       Number v = ((Number) iterator_3.next());
-      if (v.longValue() > 0L) {
-        seqCompResult_1.add(vdmtetris.quotes.BlankQuote.getInstance());
-      }
+      seqCompResult_1.add(vdmtetris.quotes.BlankQuote.getInstance());
     }
     return Utils.copy(seqCompResult_1);
   }
@@ -75,9 +73,7 @@ public class GameGrid {
     VDMSet set_4 = SetUtil.range(1L, height);
     for (Iterator iterator_4 = set_4.iterator(); iterator_4.hasNext(); ) {
       Number v = ((Number) iterator_4.next());
-      if (v.longValue() > 0L) {
-        seqCompResult_2.add(buildEmptyRow(width));
-      }
+      seqCompResult_2.add(buildEmptyRow(width));
     }
     return Utils.copy(seqCompResult_2);
   }

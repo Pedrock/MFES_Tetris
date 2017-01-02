@@ -91,12 +91,12 @@ functions
 -- Criação de uma linha da grelha vazia
 private buildEmptyRow : nat -> seq of CellType
 	buildEmptyRow(length) == 
-		[<Blank> | v in set {1,...,length} & v > 0]; -- v > 0 utilizado para remover warning
+		[<Blank> | v in set {1,...,length}];
 
 -- Criação de uma grelha vazia
 private buildEmptyGrid : nat1*nat1 -> Grid
 	buildEmptyGrid(width, height) == 
-		[buildEmptyRow(width) | v in set {1,...,height} & v > 0 ]; -- v > 0 utilizado para remover warning
+		[buildEmptyRow(width) | v in set {1,...,height}];
 
 
 end GameGrid

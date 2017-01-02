@@ -91,9 +91,7 @@ public class UnitTests extends TestCase {
     long toVar_3 = 19L;
 
     for (Long i = 1L; i <= toVar_3; i++) {
-      if (i.longValue() > 0L) {
-        tetris.tick();
-      }
+      tetris.tick();
     }
     assertTrue(Utils.equals(tetris.tetramino.y, 2L));
     tetris.tick();
@@ -112,9 +110,7 @@ public class UnitTests extends TestCase {
     long toVar_4 = 19L;
 
     for (Long i = 1L; i <= toVar_4; i++) {
-      if (i.longValue() > 0L) {
-        tetris.tick();
-      }
+      tetris.tick();
     }
     assertTrue(Utils.equals(tetris.tetramino.y, 3L));
     tetris.tick();
@@ -187,7 +183,7 @@ public class UnitTests extends TestCase {
     assertTrue(Utils.equals(tetris.score, 40L));
   }
 
-  private void testGameOver() {
+  public void testGameOver() {
 
     tetris.begin();
     long toVar_6 =
@@ -195,13 +191,53 @@ public class UnitTests extends TestCase {
             Utils.floor(Utils.divide((1.0 * (GameGrid.VISIBLE_HEIGHT.longValue() + 1L)), 2L)));
 
     for (Long i = 1L; i <= toVar_6; i++) {
-      if (i.longValue() > 0L) {
-        tetris.tetramino = new Tetramino('O');
-        assertTrue(Utils.equals(tetris.gameState, vdmtetris.quotes.GameQuote.getInstance()));
-        tetris.hardDrop();
-      }
+      tetris.tetramino = new Tetramino('O');
+      assertTrue(Utils.equals(tetris.gameState, vdmtetris.quotes.GameQuote.getInstance()));
+      tetris.hardDrop();
     }
     assertTrue(Utils.equals(tetris.gameState, vdmtetris.quotes.GameOverQuote.getInstance()));
+  }
+
+  public void testRotations() {
+
+    tetris.begin();
+    tetris.tetramino = new Tetramino('Z');
+    assertTrue(Utils.equals(tetris.tetramino.rotation, 1L));
+    long toVar_7 = 4L;
+
+    for (Long i = 1L; i <= toVar_7; i++) {
+      tetris.rotateLeft();
+    }
+    assertTrue(Utils.equals(tetris.tetramino.rotation, 1L));
+    long toVar_8 = 4L;
+
+    for (Long i = 1L; i <= toVar_8; i++) {
+      tetris.rotateRight();
+    }
+    assertTrue(Utils.equals(tetris.tetramino.rotation, 1L));
+  }
+
+  public void testGhostPiece() {
+
+    tetris.begin();
+    tetris.tetramino = new Tetramino('I');
+    assertTrue(Utils.equals(tetris.getGhostPieceHeight(), 2L));
+  }
+
+  public void testTickDelays() {
+
+    Number prevDelay = 0L;
+    Number curDelay = 0L;
+    tetris.begin();
+    prevDelay = tetris.getTickDelay();
+    long toVar_9 = 50L;
+
+    for (Long level = 1L; level <= toVar_9; level++) {
+      tetris.level = level;
+      curDelay = tetris.getTickDelay();
+      assertTrue(curDelay.longValue() <= prevDelay.longValue());
+      prevDelay = curDelay;
+    }
   }
 
   public UnitTests() {}
