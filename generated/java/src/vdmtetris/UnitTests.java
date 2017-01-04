@@ -13,11 +13,6 @@ public class UnitTests extends TestCase {
 
     tetris.begin();
     assertFalse(tetris.tetraminoHasCollisionInCoords(5L, 5L));
-  }
-
-  public void testNoCollision2() {
-
-    tetris.begin();
     tetris.tetramino = new Tetramino('I');
     tetris.tetramino.rotation = 2L;
     assertFalse(tetris.tetraminoHasCollisionInCoords(8L, 15L));
@@ -81,7 +76,7 @@ public class UnitTests extends TestCase {
     assertTrue(Utils.equals(tetris.tetramino.x, 1L));
   }
 
-  public void testAddTetramino() {
+  public void testAddTetraminoes() {
 
     tetris.begin();
     tetris.tetramino = new Tetramino('I');
@@ -100,11 +95,6 @@ public class UnitTests extends TestCase {
             Utils.get(((VDMSeq) Utils.get(tetris.gameGrid.grid, 1L)), 5L),
             vdmtetris.quotes.CyanQuote.getInstance()));
     assertTrue(Utils.equals(tetris.tetramino.y, 22L));
-  }
-
-  public void testAdd2Tetraminos() {
-
-    testAddTetramino();
     tetris.tetramino = new Tetramino('I');
     assertTrue(Utils.equals(tetris.tetramino.y, 22L));
     long toVar_4 = 19L;

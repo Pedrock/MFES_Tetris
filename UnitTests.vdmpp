@@ -3,22 +3,19 @@ class UnitTests is subclass of TestCase
 instance variables
 private tetris : Tetris := new Tetris();
 
-
 operations
+
+-- Testa que não há colisões em sítios onde não é suposto as haver
 public testNoCollision: () ==> ()
 testNoCollision() == (
 	tetris.begin();
-	assertFalse(tetris.tetraminoHasCollisionInCoords(5,5))
-);
-
-public testNoCollision2: () ==> ()
-testNoCollision2() == (
-	tetris.begin();
+	assertFalse(tetris.tetraminoHasCollisionInCoords(5,5));
 	tetris.tetramino := new Tetramino('I'); -- Tetraminó I
 	tetris.tetramino.rotation := 2;
 	assertFalse(tetris.tetraminoHasCollisionInCoords(8,15));
 );
 
+-- Testa que existe colisões com uma parede
 public testWallCollision: () ==> ()
 testWallCollision() == (
 	tetris.begin();
@@ -28,6 +25,7 @@ testWallCollision() == (
 	assertFalse(tetris.tetraminoHasCollisionInCoords(8,15));
 );
 
+-- Testa um wall kick com a parede direita
 public testRightWallKick: () ==> ()
 testRightWallKick() == (
 	tetris.begin();
@@ -47,6 +45,7 @@ testRightWallKick() == (
 	assertTrue(tetris.tetramino.x = 7);
 );
 
+-- Testa um wall kick com a parede esquerda
 public testLeftWallKick: () ==> ()
 testLeftWallKick() == (
 	tetris.begin();
@@ -70,8 +69,9 @@ testLeftWallKick() == (
 	assertTrue(tetris.tetramino.x = 1);
 );
 
-public testAddTetramino: () ==> ()
-testAddTetramino() == (
+-- Testa a adição de tetraminós à grelha
+public testAddTetraminoes: () ==> ()
+testAddTetraminoes() == (
 	tetris.begin();
 	tetris.tetramino := new Tetramino('I');
 	assertTrue(tetris.tetramino.y = 22);
@@ -82,11 +82,6 @@ testAddTetramino() == (
 	tetris.tick(); -- Tetraminó é adicionado à grelha
 	assertTrue(tetris.gameGrid.grid(1)(5) = <Cyan>);
 	assertTrue(tetris.tetramino.y = 22); -- Novo tetraminó
-);
-
-public testAdd2Tetraminos: () ==> ()
-testAdd2Tetraminos() == (
-	testAddTetramino();
 	tetris.tetramino := new Tetramino('I');
 	assertTrue(tetris.tetramino.y = 22);
 	for i = 1 to 19 do tetris.tick();
@@ -96,6 +91,7 @@ testAdd2Tetraminos() == (
 	assertTrue(tetris.tetramino.y = 22); -- Novo tetraminó
 );
 
+-- Testa o hard drop
 public testHardDrop: () ==> ()
 testHardDrop() == (
 	tetris.begin();
@@ -106,6 +102,7 @@ testHardDrop() == (
 	assertTrue(tetris.tetramino.y = 22); -- Novo tetraminó
 );
 
+-- Testa se as linhas completas são apagadas
 public testCompletedLine: () ==> ()
 testCompletedLine() == (
 	tetris.begin();
@@ -131,6 +128,7 @@ testCompletedLine() == (
 	assertTrue(tetris.score = 40);
 );
 
+-- Testa o game over
 public testGameOver: () ==> ()
 testGameOver() == (
 	tetris.begin();
@@ -142,6 +140,7 @@ testGameOver() == (
 	assertTrue(tetris.gameState = <GameOver>);
 );
 
+-- Testa as rotações
 public testRotations: () ==> ()
 testRotations() == (
 	tetris.begin();
@@ -153,6 +152,7 @@ testRotations() == (
 	assertTrue(tetris.tetramino.rotation = 1);
 );
 
+-- Testa a ghost piece
 public testGhostPiece: () ==> ()
 testGhostPiece() == (
 	tetris.begin();
@@ -161,6 +161,7 @@ testGhostPiece() == (
 	
 );
 
+-- Testa se os tick delays se mantém ou diminuem de um nível para o seguinte
 public testTickDelays: () ==> ()
 testTickDelays() == (
 	dcl prevDelay : nat := 0;
