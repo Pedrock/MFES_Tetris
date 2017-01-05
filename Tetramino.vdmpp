@@ -219,7 +219,7 @@ public Tetramino : char ==> Tetramino
 Tetramino(c) == Tetramino(tetraminosTypes(c))
 pre c in set dom tetraminosTypes;
 
--- Devolve o índice de rotação e a matriz representativa do tetraminó aquando da rotação à direita
+-- Retorna o índice de rotação e a matriz representativa do tetraminó aquando da rotação à direita
 public getRightRotation : () ==> RotationResult
 getRightRotation() == (
 	let newRotation = ((rotation) mod (len rotationsList) + 1) in (
@@ -230,7 +230,7 @@ post (rotation < len rotationsList and RESULT = mk_RotationResult(rotation+1, ro
 		 or (rotation = len rotationsList and RESULT = mk_RotationResult(1, rotationsList(1)));
 
 
--- Devolve o índice de rotação e a matriz representativa do tetraminó aquando da rotação à esquerda
+-- Retorna o índice de rotação e a matriz representativa do tetraminó aquando da rotação à esquerda
 public getLeftRotation : () ==> RotationResult
 getLeftRotation() == (
 	if rotation = 1 then return mk_RotationResult(len rotationsList,rotationsList(len rotationsList))
@@ -247,7 +247,7 @@ post RESULT = rotationsList(rotation);
 
 functions
 
--- Devolve o número de tetraminós possíveis
+-- Retorna o número de tetraminós possíveis
 public getNumber : () -> nat
 getNumber() == len tetraminoes;
 

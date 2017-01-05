@@ -55,7 +55,7 @@ public numberOfLines : nat := 0;
 -- Estado do jogo atual
 public gameState : GameState := <NotStarted>;
 
--- Invariante para garantir que um tetraminó não sobrepõe a matriz de jogo
+-- Invariante para garantir que o tetraminó atual não sobrepõe peças existentes na grelha de jogo
 inv tetramino = nil or not hasCollision(tetramino.rotationsList(tetramino.rotation), gameGrid.grid, tetramino.x, tetramino.y);
 
 operations
@@ -72,7 +72,7 @@ begin() == (
 	gameState := <Game>;
 );
 
--- Função a ser chamada a cada tick do jogo, de forma a atualizar o mesmo
+-- Operação a ser chamada a cada tick do jogo, de forma a atualizar o mesmo
 public tick : () ==> ()
 tick() == (
 	if (gameState <> <Game>) then return;
@@ -82,7 +82,7 @@ tick() == (
 		onCollision();
 );
 
--- Função para obter o delay entre ticks.
+-- Retorna o delay entre ticks para o nível atual.
 public getTickDelay : () ==> int
 getTickDelay() == (
 	if (level <= 8) then return floor (-83.5*level + 800.67)
@@ -91,7 +91,7 @@ getTickDelay() == (
 )
 post RESULT >= 13;
 
--- Função chamada para mover a peça atual para a direita
+-- Move a peça atual para a direita
 public moveRight : () ==> ()
 moveRight() == (
 	if (gameState <> <Game>) then return;
@@ -99,7 +99,7 @@ moveRight() == (
 		tetramino.x := tetramino.x + 1;
 );
 
--- Função chamada para mover a peça atual para a esquerda
+-- Move a peça atual para a esquerda
 public moveLeft : () ==> ()
 moveLeft() == (
 	if (gameState <> <Game>) then return;
@@ -107,21 +107,21 @@ moveLeft() == (
 		tetramino.x := tetramino.x - 1;
 );
 
--- Função chamada para rodar a peça atual para a direita
+-- Roda a peça atual para a direita
 public rotateRight : () ==> ()
 rotateRight() == (
 	if (gameState <> <Game>) then return;
 	tryRotation(tetramino.getRightRotation())
 );
 
--- Função chamada para rodar a peça atual para a esquerda
+-- Roda a peça atual para a esquerda
 public rotateLeft : () ==> ()
 rotateLeft() == (
 	if (gameState <> <Game>) then return;
 	tryRotation(tetramino.getLeftRotation())
 );
 
--- Função chamada para fazer um hard drop
+-- Executa um hard drop
 public hardDrop : () ==> ()
 hardDrop() == (
 	if (gameState <> <Game>) then return;
@@ -131,7 +131,7 @@ hardDrop() == (
 	onCollision()
 );
 
--- Devolve a altura a que deve ficar a ghost piece
+-- Retorna a altura a que deve ficar a ghost piece
 -- http://tetris.wikia.com/wiki/Ghost_piece
 public getGhostPieceHeight : () ==> [int]
 getGhostPieceHeight() == (
@@ -151,14 +151,14 @@ post let matrix = tetramino.rotationsList(tetramino.rotation) in (
 	)
 );
 
--- Função utilizada para verificar se uma peça pode ser movida uma casa para baixo
+-- Verifica se uma peça pode ser movida uma casa para baixo
 private canMoveDown : () ==> bool
 canMoveDown() == (
 	return not tetraminoHasCollisionInCoords(tetramino.x, tetramino.y - 1)
 )
 post RESULT = not hasCollision(tetramino.rotationsList(tetramino.rotation), gameGrid.grid, tetramino.x, tetramino.y - 1);
 
--- Função chamada aquando da colisão de um tetraminó.
+-- Operação chamada aquando da colisão de um tetraminó.
 -- Adiciona o mesmo à grelha, elimina linhas completas e verifica se o jogo termina.
 private onCollision : () ==> ()
 onCollision() == (
@@ -176,7 +176,7 @@ onCollision() == (
 	);
 );
 
--- Função utilizada para remover linhas completas e atulizar pontuação
+-- Remove as linhas completas e atuliza a pontuação
 private removeCompleteLines : () ==> ()
 removeCompleteLines() == (
 	dcl linesRemoved : nat := 0;

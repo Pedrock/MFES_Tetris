@@ -1,6 +1,10 @@
 class UnitTests is subclass of TestCase
+/*
+	Esta classe define os cenários de utilização e casos de teste referentes ao Tetris
+*/
 
 instance variables
+-- Instância do jogo, utilizada nos testes
 private tetris : Tetris := new Tetris();
 
 operations

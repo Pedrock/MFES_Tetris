@@ -6,10 +6,10 @@ class GameGrid
 
 types
 
--- Possiveis tipos de células
+-- Possíveis tipos de células
 public CellType = <Blank> | <Cyan> | <Yellow> | <Purple> | <Green> | <Red> | <Blue> | <Orange>;
 
--- Grelha do jogo, que é constituida por uma matriz de células
+-- Grelha do jogo, que é constituída por uma matriz de células
 public Grid = seq of seq of CellType;
 
 
@@ -88,12 +88,12 @@ post len grid = HEIGHT;
 
 functions
 
--- Criação de uma linha da grelha vazia
+-- Cria uma linha da grelha vazia
 private buildEmptyRow : nat -> seq of CellType
 	buildEmptyRow(length) == 
 		[<Blank> | v in set {1,...,length}];
 
--- Criação de uma grelha vazia
+-- Cria uma grelha vazia
 private buildEmptyGrid : nat1*nat1 -> Grid
 	buildEmptyGrid(width, height) == 
 		[buildEmptyRow(width) | v in set {1,...,height}];
