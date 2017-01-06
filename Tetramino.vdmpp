@@ -1,6 +1,6 @@
 class Tetramino
 /*
-	A classe Tetramino representa as possiveis peças do jogo, que são todas tetraminós.
+	A classe Tetramino representa uma peça do jogo (tetraminó).
 */
 
 types
