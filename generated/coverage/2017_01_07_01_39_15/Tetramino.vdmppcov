@@ -1,0 +1,254 @@
+class Tetramino
+/*
+	A classe Tetramino representa uma peça do jogo (tetraminó).
+*/
+
+types
+-- Linha de células representativa de um tetraminó
+public Line = seq of GameGrid`CellType;
+
+
+-- Matriz de tipos de células representativa de um tetraminó
+public TetraminoMatrix = seq of Line;
+
+-- Sequência das possiveis rotações de um tetraminó
+public RotationsList = seq of TetraminoMatrix;
+
+-- Resultado de uma rotação: número de rotação (índice) e a respetiva matriz
+public RotationResult:: rotation : nat1
+												matrix : TetraminoMatrix;
+
+values
+
+-- Mapeamento de caráter que representa um tetraminó para o índice da lista
+private tetraminosTypes : map char to nat1 = {
+	'I' |-> 1,
+	'J' |-> 2,
+	'L' |-> 3,
+	'O' |-> 4,
+	'S' |-> 5,
+	'T' |-> 6,
+	'Z' |-> 7
+};
+
+-- Todas as diferentes representações (matrizes) de tetraminos no jogo, tendo em contas as suas rotações
+-- Utilizado o Super Rotation System (SRS): http://tetris.wikia.com/wiki/SRS
+private tetraminoes : seq of RotationsList = 
+[
+	[ -- Tetramino I
+		[
+			[<Blank>,	<Blank>, <Blank>,	<Blank>],
+			[<Cyan>,  <Cyan>,  <Cyan>,  <Cyan>],	
+			[<Blank>,	<Blank>, <Blank>,	<Blank>],
+			[<Blank>,	<Blank>, <Blank>,	<Blank>]
+		],
+		[
+			[<Blank>,	<Blank>, <Cyan>, <Blank>],
+			[<Blank>,	<Blank>, <Cyan>, <Blank>],
+			[<Blank>,	<Blank>, <Cyan>, <Blank>],
+			[<Blank>,	<Blank>, <Cyan>, <Blank>]
+		],
+		[
+			[<Blank>,	<Blank>, <Blank>,	<Blank>],
+			[<Blank>,	<Blank>, <Blank>,	<Blank>],
+			[<Cyan>,	<Cyan>,	 <Cyan>,	<Cyan> ],	
+			[<Blank>,	<Blank>, <Blank>,	<Blank>]
+		],
+		[
+			[<Blank>,	<Cyan>,	<Blank>,	<Blank>],
+			[<Blank>,	<Cyan>,	<Blank>,	<Blank>],
+			[<Blank>,	<Cyan>,	<Blank>,	<Blank>],
+			[<Blank>,	<Cyan>,	<Blank>,	<Blank>]
+		]
+	],
+	
+	[ -- Tetramino J
+		[
+			[<Blue>,	 <Blank>, <Blank>],
+			[<Blue>,	 <Blue>,  <Blue>],
+			[<Blank>,  <Blank>, <Blank>]
+		],
+		[
+			[<Blank>,  <Blue>, <Blue>],
+			[<Blank>,  <Blue>, <Blank>],
+			[<Blank>,  <Blue>, <Blank>]
+		],
+		[
+			[<Blank>, <Blank>, <Blank>],
+			[<Blue>,  <Blue>,  <Blue>],
+			[<Blank>, <Blank>, <Blue>]
+		],
+		[
+			[<Blank>, <Blue>, <Blank>],
+			[<Blank>, <Blue>, <Blank>],
+			[<Blue>,  <Blue>, <Blank>]
+		]
+	],
+	
+	[ -- Tetramino L
+		[
+			[<Blank>,	 <Blank>,  <Orange>],
+			[<Orange>, <Orange>, <Orange>],
+			[<Blank>,	 <Blank>,	 <Blank>]
+		],
+		[
+			[<Blank>,	<Orange>,	<Blank>],
+			[<Blank>,	<Orange>,	<Blank>],
+			[<Blank>,	<Orange>,	<Orange>]
+		],
+		[
+			[<Blank>,	 <Blank>,  <Blank>],
+			[<Orange>, <Orange>, <Orange>],
+			[<Orange>, <Blank>,  <Blank>]
+		],
+		[
+			[<Orange>, <Orange>, <Blank>],
+			[<Blank>,	 <Orange>, <Blank>],
+			[<Blank>,	 <Orange>, <Blank>]
+		]
+	],
+	
+	[ -- Tetramino quadrado
+		[
+			[<Yellow>, <Yellow>],
+			[<Yellow>, <Yellow>]
+		]
+	],
+	
+	[ -- Tetramino S
+		[
+			[<Blank>, <Green>, <Green>],
+			[<Green>, <Green>, <Blank>],
+			[<Blank>, <Blank>, <Blank>]
+		],
+		[
+			[<Blank>, <Green>, <Blank>],
+			[<Blank>, <Green>, <Green>],
+			[<Blank>, <Blank>, <Green>]
+		],
+		[
+			[<Blank>, <Blank>, <Blank>],
+			[<Blank>, <Green>, <Green>],
+			[<Green>, <Green>, <Blank>]
+		],
+		[
+			[<Green>, <Blank>, <Blank>],
+			[<Green>, <Green>, <Blank>],
+			[<Blank>, <Green>, <Blank>]
+		]
+	],
+	
+	[ -- Tetramino T
+		[
+			[<Blank>, <Purple>, <Blank>],
+			[<Purple>, <Purple>, <Purple>],
+			[<Blank>, <Blank>, <Blank>]
+		],
+		[
+			[<Blank>, <Purple>, <Blank>],
+			[<Blank>, <Purple>, <Purple>],
+			[<Blank>, <Purple>, <Blank>]
+		],
+		[
+			[<Blank>, <Blank>, <Blank>],
+			[<Purple>, <Purple>, <Purple>],
+			[<Blank>, <Purple>, <Blank>]
+		],
+		[
+			[<Blank>, <Purple>, <Blank>],
+			[<Purple>, <Purple>, <Blank>],
+			[<Blank>, <Purple>, <Blank>]
+		]
+	],
+	
+	[ -- Tetramino Z
+		[
+			[<Red>, <Red>, <Blank>],
+			[<Blank>, <Red>, <Red>],
+			[<Blank>, <Blank>, <Blank>]
+		],
+		[
+			[<Blank>, <Blank>, <Red>],
+			[<Blank>, <Red>, <Red>],
+			[<Blank>, <Red>, <Blank>]
+		],
+		[
+			[<Blank>, <Blank>, <Blank>],
+			[<Red>, <Red>, <Blank>],
+			[<Blank>, <Red>, <Red>]
+		],
+		[
+			[<Blank>, <Red>, <Blank>],
+			[<Red>, <Red>, <Blank>],
+			[<Red>, <Blank>, <Blank>]
+		]
+	]
+];
+
+
+instance variables
+
+-- Rotação do tetraminó
+public rotation : nat1 := 1;
+
+-- Lista de rotações do tetraminó
+public rotationsList : RotationsList;
+
+-- Coordenadas iniciais do tetraminó
+public x : int := GameGrid`WIDTH / 2;
+public y : int := GameGrid`HEIGHT;
+
+--O índice da rotação não pode ser superior ao tamanho da lista de possiveis rotações
+inv rotation <= len rotationsList;
+
+
+operations
+
+-- Construtor de Tetraminó através de índice da lista
+public Tetramino : nat1 ==> Tetramino
+Tetramino(number) == (
+rotationsList := tetraminoes(number);
+x := GameGrid`WIDTH / 2 - floor (len tetraminoes(number) / 4);
+return self
+)
+pre number in set inds tetraminoes
+post RESULT.rotationsList = tetraminoes(number) and RESULT.rotation = 1;
+
+-- Contrutor de Tetraminó através do caráter que o representa
+public Tetramino : char ==> Tetramino
+Tetramino(c) == Tetramino(tetraminosTypes(c))
+pre c in set dom tetraminosTypes;
+
+-- Retorna o índice de rotação e a matriz representativa do tetraminó aquando da rotação à direita
+public getRightRotation : () ==> RotationResult
+getRightRotation() == (
+	let newRotation = ((rotation) mod (len rotationsList) + 1) in (
+		return mk_RotationResult(newRotation, rotationsList(newRotation))
+	)
+)
+post (rotation < len rotationsList and RESULT = mk_RotationResult(rotation+1, rotationsList(rotation+1)))
+		 or (rotation = len rotationsList and RESULT = mk_RotationResult(1, rotationsList(1)));
+
+
+-- Retorna o índice de rotação e a matriz representativa do tetraminó aquando da rotação à esquerda
+public getLeftRotation : () ==> RotationResult
+getLeftRotation() == (
+	if rotation = 1 then return mk_RotationResult(len rotationsList,rotationsList(len rotationsList))
+	else return mk_RotationResult(rotation - 1, rotationsList(rotation - 1))
+)
+post (rotation > 1 and RESULT = mk_RotationResult(rotation-1, rotationsList(rotation-1)))
+		 or (rotation = 1 and RESULT = mk_RotationResult(len rotationsList, rotationsList(len rotationsList)));
+
+
+-- Retorna a matriz do tetraminó para a rotação atual
+public getCurrentMatrix : () ==> TetraminoMatrix
+getCurrentMatrix() == return rotationsList(rotation)
+post RESULT = rotationsList(rotation);
+
+functions
+
+-- Retorna o número de tetraminós possíveis
+public getNumber : () -> nat
+getNumber() == len tetraminoes;
+
+end Tetramino

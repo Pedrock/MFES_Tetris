@@ -1,0 +1,12 @@
+class UnitTestRunner
+/*
+	Esta classe é responsável por correr todos os testes unitários
+*/
+
+operations
+		
+-- Executa todos os testes unitários
+    public Execute: () ==> ()
+           Execute() == new TestRunner().run();
+
+end UnitTestRunner

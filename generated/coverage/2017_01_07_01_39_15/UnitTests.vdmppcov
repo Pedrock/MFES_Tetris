@@ -1,0 +1,228 @@
+class UnitTests is subclass of TestCase
+/*
+	Esta classe define os cenários de utilização e casos de teste referentes ao Tetris
+*/
+
+instance variables
+-- Instância do jogo, utilizada nos testes
+private tetris : Tetris := new Tetris();
+
+operations
+
+-- Testa que não há colisões em sítios onde não é suposto as haver
+public testNoCollision: () ==> ()
+testNoCollision() == (
+	tetris.begin();
+	assertFalse(tetris.tetraminoHasCollisionInCoords(5,5));
+	tetris.tetramino := new Tetramino('I'); -- Tetraminó I
+	tetris.tetramino.rotation := 2;
+	assertFalse(tetris.tetraminoHasCollisionInCoords(8,15));
+);
+
+-- Testa que existe colisões com uma parede
+public testWallCollision: () ==> ()
+testWallCollision() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino('I'); -- Tetraminó I
+	assertTrue(tetris.tetraminoHasCollisionInCoords(8,15));
+	tetris.tetramino.rotation := 2;
+	assertFalse(tetris.tetraminoHasCollisionInCoords(8,15));
+);
+
+-- Testa as rotações
+-- Requisito R01
+public testRotations: () ==> ()
+testRotations() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino('Z');
+	assertTrue(tetris.tetramino.rotation = 1);
+	for i = 1 to 4 do tetris.rotateLeft();
+	assertTrue(tetris.tetramino.rotation = 1);
+	for i = 1 to 4 do tetris.rotateRight();
+	assertTrue(tetris.tetramino.rotation = 1);
+);
+
+-- Testa a adição de tetraminós à grelha
+-- Requisito R02, R03, R04 e R05
+public testAddTetraminoes: () ==> ()
+testAddTetraminoes() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino('I');
+	assertTrue(tetris.tetramino.y = 22);
+	tetris.tick();
+	assertTrue(tetris.tetramino.y = 21);
+	for i = 1 to 19 do tetris.tick();
+	assertTrue(tetris.tetramino.y = 2);
+	tetris.tick(); -- Tetraminó é adicionado à grelha
+	assertTrue(tetris.gameGrid.grid(1)(5) = <Cyan>);
+	assertTrue(tetris.tetramino.y = 22); -- Novo tetraminó
+	tetris.tetramino := new Tetramino('I');
+	assertTrue(tetris.tetramino.y = 22);
+	for i = 1 to 19 do tetris.tick();
+	assertTrue(tetris.tetramino.y = 3);
+	tetris.tick();
+	assertTrue(tetris.gameGrid.grid(2)(5) = <Cyan>);
+	assertTrue(tetris.tetramino.y = 22); -- Novo tetraminó
+);
+
+-- Testa se as linhas completas são apagadas
+-- Requisitos R06, R07, R08, R09
+public testCompletedLine: () ==> ()
+testCompletedLine() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino('I');
+	tetris.moveLeft(); tetris.moveLeft(); tetris.moveLeft(); 
+	tetris.hardDrop();
+	tetris.tetramino := new Tetramino('I');
+	tetris.moveRight();
+	tetris.hardDrop();
+	assertTrue(tetris.gameGrid.grid(1)(1) = <Cyan>);
+	assertTrue(tetris.gameGrid.grid(1)(8) = <Cyan>);
+	tetris.tetramino := new Tetramino('O'); -- Square
+	tetris.moveRight(); tetris.moveRight();
+	tetris.moveRight(); tetris.moveRight();
+	tetris.hardDrop();
+	for i = 1 to GameGrid`HEIGHT do (
+		assertTrue(tetris.gameGrid.grid(i)(1) = <Blank>);
+		assertTrue(tetris.gameGrid.grid(i)(8) = <Blank>);
+	);
+	assertTrue(tetris.gameGrid.grid(1)(10) = <Yellow>);
+	assertTrue(tetris.gameGrid.grid(2)(10) = <Blank>);
+	assertTrue(tetris.level = 0);
+	assertTrue(tetris.score = 40);
+);
+
+-- Testa se os tick delays se mantém ou diminuem de um nível para o seguinte
+-- Requisito R10
+public testTickDelays: () ==> ()
+testTickDelays() == (
+	dcl prevDelay : nat := 0;
+	dcl curDelay : nat := 0;
+	tetris.begin();
+	prevDelay := tetris.getTickDelay();
+	for level = 1 to 50 do (
+		tetris.level := level;
+		curDelay := tetris.getTickDelay();
+		assertTrue(curDelay <= prevDelay);
+		prevDelay := curDelay;
+	)
+);
+
+-- Testa se o próximo tetraminó é realmente o próximo
+-- Requisito R11
+public testNextTetramino : () ==> ()
+testNextTetramino() == (
+	dcl nextTetramino : Tetramino;
+	tetris.begin();
+	nextTetramino := tetris.nextTetramino;
+	tetris.hardDrop();
+	assertTrue(tetris.tetramino = nextTetramino);
+);
+
+-- Testa o hard drop
+-- Requisito R13
+public testHardDrop: () ==> ()
+testHardDrop() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino('J'); -- Tetramino J
+	assertTrue(tetris.tetramino.y = 22);
+	tetris.hardDrop();
+	assertTrue(tetris.gameGrid.grid(1)(5) = <Blue>);
+	assertTrue(tetris.tetramino.y = 22); -- Novo tetraminó
+);
+
+-- Testa o game over
+-- Requisito R15
+public testGameOver: () ==> ()
+testGameOver() == (
+	tetris.begin();
+	for i = 1 to floor ((GameGrid`VISIBLE_HEIGHT + 1) / 2) do (
+			tetris.tetramino := new Tetramino('O');
+			assertTrue(tetris.gameState = <Game>);
+			tetris.hardDrop();
+	);
+	assertTrue(tetris.gameState = <GameOver>);
+);
+
+-- Testa o reinício do jogo
+-- Requisito R16
+public testRestart: () ==> ()
+testRestart() == (
+	dcl grid : GameGrid;
+	tetris.begin();
+	grid := tetris.gameGrid;
+	tetris.begin();
+	assertTrue(grid <> tetris.gameGrid);
+);
+
+-- Testa a ghost piece
+-- Requisito R17
+public testGhostPiece: () ==> ()
+testGhostPiece() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino('I');
+	assertTrue(tetris.getGhostPieceHeight() = 2);
+	
+);
+
+-- Testa um wall kick com a parede direita
+-- Requisito R18
+public testRightWallKick: () ==> ()
+testRightWallKick() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino('I'); -- Tetraminó I
+	assertTrue(tetris.tetramino.x = 4);
+	tetris.moveRight(); tetris.moveRight(); tetris.moveRight();
+	assertTrue(tetris.tetramino.x = 7);
+	tetris.moveRight();
+	assertTrue(tetris.tetramino.x = 7);
+	tetris.rotateRight();
+	assertTrue(tetris.tetramino.rotation = 2);
+	assertTrue(tetris.tetramino.x = 7);
+	tetris.moveRight(); tetris.moveRight();
+	assertTrue(tetris.tetramino.x = 8);
+	tetris.rotateRight();
+	assertTrue(tetris.tetramino.rotation = 3);
+	assertTrue(tetris.tetramino.x = 7);
+);
+
+-- Testa um wall kick com a parede esquerda
+-- Requisito R18
+public testLeftWallKick: () ==> ()
+testLeftWallKick() == (
+	tetris.begin();
+	tetris.tetramino := new Tetramino('I'); -- Tetraminó I
+	assertTrue(tetris.tetramino.x = 4);
+	tetris.moveLeft(); tetris.moveLeft(); tetris.moveLeft();
+	assertTrue(tetris.tetramino.x = 1);
+	tetris.moveLeft();
+	assertTrue(tetris.tetramino.x = 1);
+	tetris.rotateRight();
+	assertTrue(tetris.tetramino.rotation = 2);
+	assertTrue(tetris.tetramino.x = 1);
+	tetris.moveLeft(); tetris.moveLeft(); tetris.moveLeft();
+	assertTrue(tetris.tetramino.x = -1);
+	tetris.rotateRight();
+	assertTrue(tetris.tetramino.rotation = 2);
+	tetris.moveRight();
+	assertTrue(tetris.tetramino.x = 0);
+	tetris.rotateRight();
+	assertTrue(tetris.tetramino.rotation = 3);
+	assertTrue(tetris.tetramino.x = 1);
+);
+
+-- Testa o sistema de aleatoriadade
+-- Requisito R19
+public testRandomGenerator: () ==> ()
+testRandomGenerator() == (
+	dcl pieces : set of Tetramino`RotationsList := {};
+	tetris.begin();
+	for i = 1 to Tetramino`getNumber() do (
+		assertTrue(tetris.tetramino.rotationsList not in set pieces);
+		pieces := pieces union {tetris.tetramino.rotationsList};
+		tetris.hardDrop();
+	);
+	assertFalse(tetris.tetramino.rotationsList not in set pieces);
+);
+
+end UnitTests
